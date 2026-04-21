@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <!-- Responsive design for mobile and desktop -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Dynamic page title coming from each View -->
+    <title>@ViewData["Title"] - HospitalInformationSystem</title>
+
+    <!-- Bootstrap CSS for UI styling -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Custom site styles -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <link rel="icon" type="image/x-icon" href="~/hospital-facility.png" />
+</head>
+
+<body>
+
+    @{
+        // Get logged-in user info from session
+        var username = Context.Session.GetString("Username");
+        var role = Context.Session.GetString("Role");
+    }
+
+    <!-- Main navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+
+            <!-- Brand / System name -->
+            <a class="navbar-brand" asp-controller="Auth" asp-action="Login">
+                Hospital System
+            </a>
+
+            <div class="collapse navbar-collapse show">
+
+                <!-- Left side menu (role-based navigation) -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <!-- Show menu only if user is logged in -->
+                    @if (!string.IsNullOrEmpty(username))
+                    {
+                        <!-- ADMIN MENU -->
+                        @if (role == "Admin")
+                        {
+                            <li class="nav-item">
+                                <!-- Admin dashboard -->
+                                <a class="nav-link" asp-controller="Admin" asp-action="Index">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <!-- Manage system users -->
+                                <a class="nav-link" asp-controller="Users" asp-action="Index">
+                                    Users
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <!-- Manage doctors -->
+                                <a class="nav-link" asp-controller="Doctors" asp-action="Index">
+                                    Doctors
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <!-- Manage patients -->
+                                <a class="nav-link" asp-controller="Patients" asp-action="Index">
+                                    Patients
+                                </a>
+                            </li>
+                        }
+
+                        <!-- DOCTOR MENU -->
+                        @if (role == "Doctor")
+                        {
+                            <li class="nav-item">
+                                <!-- Doctor dashboard -->
+                                <a class="nav-link" asp-controller="Doctor" asp-action="Index">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <!-- Doctor can view patients -->
+                                <a class="nav-link" asp-controller="Patients" asp-action="Index">
+                                    Patients
+                                </a>
+                            </li>
+                        }
+
+                        <!-- RECEPTION MENU -->
+                        @if (role == "Reception")
+                        {
+                            <li class="nav-item">
+                                <!-- Reception dashboard -->
+                                <a class="nav-link" asp-controller="Reception" asp-action="Index">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <!-- Reception can manage patients -->
+                                <a class="nav-link" asp-controller="Patients" asp-action="Index">
+                                    Patients
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+
+                <!-- Right side: user info + logout -->
+                <ul class="navbar-nav ms-auto">
+
+                    @if (!string.IsNullOrEmpty(username))
+                    {
+                        <li class="nav-item">
+                            <!-- Show logged-in user info -->
+                            <span class="nav-link text-light">
+                                Hello, @username (@role)
+                            </span>
+                        </li>
+
+                        <li class="nav-item">
+                            <!-- Logout clears session -->
+                            <a class="nav-link text-warning"
+                               asp-controller="Auth"
+                               asp-action="Logout">
+                                Logout
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main page content will be injected here -->
+    <div class="container mt-4">
+        @RenderBody()
+    </div>
+
+    <!-- JS dependencies -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Page-specific scripts (optional section) -->
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

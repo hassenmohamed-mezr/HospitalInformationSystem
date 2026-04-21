@@ -1,0 +1,54 @@
+@using HospitalInformationSystem.ViewModels.CRUD_DoctorProfileViewMode
+@model CreateDoctorProfileViewModel
+
+@{
+    ViewData["Title"] = "Create Doctor Profile";
+}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h2>Create Doctor Profile</h2>
+
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="UserId" class="form-label">Doctor User</label>
+                <select asp-for="UserId" class="form-select" asp-items="@(ViewBag.DoctorUsers)">
+                    <option value="">-- Select Doctor User --</option>
+                </select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Specialty" class="form-label"></label>
+                <input asp-for="Specialty" class="form-control" />
+                <span asp-validation-for="Specialty" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Room" class="form-label"></label>
+                <input asp-for="Room" class="form-control" />
+                <span asp-validation-for="Room" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="YearsOfExperience" class="form-label"></label>
+                <input asp-for="YearsOfExperience" class="form-control" type="number" min="0" />
+                <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label"></label>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-secondary" asp-action="Index">Back</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

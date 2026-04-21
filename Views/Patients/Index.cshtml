@@ -1,0 +1,90 @@
+@model List<HospitalInformationSystem.Models.Patient>
+
+@{
+    ViewData["Title"] = "Patients";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Patients</h2>
+    <div>
+        <a class="btn btn-success" asp-action="Create">Register Patient</a>
+        @if (Context.Session.GetString("Role") == "Admin")
+        {
+            <a class="btn btn-secondary" asp-controller="Admin" asp-action="Index">Back</a>
+        }
+        else
+        {
+            <a class="btn btn-secondary" asp-controller="Reception" asp-action="Index">Back</a>
+        }
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-light">
+        <strong>Search</strong>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label" for="fullName">Full name</label>
+                <input type="text" class="form-control" id="fullName" name="fullName" value="@ViewBag.FullName" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="nationalId">National ID</label>
+                <input type="text" class="form-control" id="nationalId" name="nationalId" value="@ViewBag.NationalId" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="phoneNumber">Phone number</label>
+                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="@ViewBag.PhoneNumber" />
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Full name</th>
+            <th>Date of birth</th>
+            <th>Gender</th>
+            <th>National ID</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th style="width:120px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.FullName</td>
+                <td>@(p.DateOfBirth.HasValue ? p.DateOfBirth.Value.ToString("yyyy-MM-dd") : "—")</td>
+                <td>@(string.IsNullOrEmpty(p.Gender) ? "—" : p.Gender)</td>
+                <td>@(string.IsNullOrEmpty(p.NationalId) ? "—" : p.NationalId)</td>
+                <td>@p.PhoneNumber</td>
+                <td>
+                    @if (p.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@p.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">No patients found.</p>
+}
