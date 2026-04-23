@@ -21,5 +21,7 @@ namespace HospitalInformationSystem.Models
         public int? YearsOfExperience { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public ICollection<Visit> Visits { get; set; } = new List<Visit>();
     }
 }

@@ -21,6 +21,13 @@ body {
   margin-bottom: 60px;
 }
 
+    body.login-bg {
+        background-image: url('/images/abstract-blur-luxury-hospital-corridor-generative-ai/logo_make_11_06_2023_239.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;

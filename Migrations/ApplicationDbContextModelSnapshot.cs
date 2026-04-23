@@ -193,6 +193,47 @@ namespace HospitalInformationSystem.Migrations
                     b.ToTable("UserProfiles");
                 });
 
+            modelBuilder.Entity("HospitalInformationSystem.Models.Visit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DoctorProfileId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("VisitDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorProfileId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Visits");
+                });
+
             modelBuilder.Entity("HospitalInformationSystem.Models.DoctorProfile", b =>
                 {
                     b.HasOne("HospitalInformationSystem.Models.User", "User")
@@ -213,6 +254,35 @@ namespace HospitalInformationSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HospitalInformationSystem.Models.Visit", b =>
+                {
+                    b.HasOne("HospitalInformationSystem.Models.DoctorProfile", "DoctorProfile")
+                        .WithMany("Visits")
+                        .HasForeignKey("DoctorProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HospitalInformationSystem.Models.Patient", "Patient")
+                        .WithMany("Visits")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DoctorProfile");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("HospitalInformationSystem.Models.DoctorProfile", b =>
+                {
+                    b.Navigation("Visits");
+                });
+
+            modelBuilder.Entity("HospitalInformationSystem.Models.Patient", b =>
+                {
+                    b.Navigation("Visits");
                 });
 
             modelBuilder.Entity("HospitalInformationSystem.Models.User", b =>

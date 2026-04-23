@@ -1,0 +1,51 @@
+@using HospitalInformationSystem.ViewModels.CRUD_VisitViewMode
+@model CreateVisitViewModel
+
+@{
+    ViewData["Title"] = "Create Visit";
+}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h2>Create Visit</h2>
+
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="PatientId" class="form-label">Patient</label>
+                <select asp-for="PatientId" class="form-select" asp-items="@(ViewBag.Patients)">
+                    <option value="">-- Select Patient --</option>
+                </select>
+                <span asp-validation-for="PatientId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DoctorProfileId" class="form-label">Doctor</label>
+                <select asp-for="DoctorProfileId" class="form-select" asp-items="@(ViewBag.Doctors)">
+                    <option value="">-- Select Doctor --</option>
+                </select>
+                <span asp-validation-for="DoctorProfileId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="VisitDate" class="form-label"></label>
+                <input asp-for="VisitDate" class="form-control" type="datetime-local" />
+                <span asp-validation-for="VisitDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Reason" class="form-label"></label>
+                <textarea asp-for="Reason" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Reason" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-secondary" asp-action="Index">Back</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
