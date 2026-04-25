@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HospitalInformationSystem.Migrations
 {
+    /// <summary>
+    /// Designer migration for InitialCreate, defining the target model for the Users table.
+    /// </summary>
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260329032508_InitialCreate")]
     partial class InitialCreate

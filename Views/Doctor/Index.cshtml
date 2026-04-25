@@ -2,11 +2,81 @@
     ViewData["Title"] = "Doctor Dashboard";
 }
 
-<div class="card shadow">
+<div class="card shadow mb-3">
     <div class="card-body">
         <h2>Doctor Dashboard</h2>
         <p class="text-muted">Welcome, Doctor.</p>
 
-        <a class="btn btn-outline-danger" asp-controller="Auth" asp-action="Logout">Logout</a>
+        <a class="btn btn-outline-danger"
+           asp-controller="Auth"
+           asp-action="Logout">
+            Logout
+        </a>
     </div>
 </div>
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card text-white bg-primary shadow">
+            <div class="card-body">
+                <h6>Total Visits</h6>
+                <h3>@ViewBag.TotalVisits</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-info shadow">
+            <div class="card-body">
+                <h6>Today Visits</h6>
+                <h3>@ViewBag.TodayVisits</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-warning shadow">
+            <div class="card-body">
+                <h6>Pending</h6>
+                <h3>@ViewBag.PendingVisits</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body">
+                <h6>Completed</h6>
+                <h3>@ViewBag.CompletedVisits</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<hr />
+
+@if (ViewBag.NextVisit != null)
+{
+    <div class="card border-info shadow">
+        <div class="card-body">
+            <h5>Next Visit</h5>
+
+            <p>
+                <strong>Patient:</strong>
+                @ViewBag.NextVisit.Patient.FullName
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                @ViewBag.NextVisit.VisitDate.ToString("yyyy-MM-dd HH:mm")
+            </p>
+
+            <a class="btn btn-sm btn-primary"
+               href="/Visits/Edit/@ViewBag.NextVisit.Id">
+                Open Visit
+            </a>
+        </div>
+    </div>
+}

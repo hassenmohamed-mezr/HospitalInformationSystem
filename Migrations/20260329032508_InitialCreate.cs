@@ -4,10 +4,15 @@
 
 namespace HospitalInformationSystem.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initial migration for the hospital management system, creating the Users table.
+    /// </summary>
     public partial class InitialCreate : Migration
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates the Users table with columns for authentication and role management.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -29,7 +34,10 @@ namespace HospitalInformationSystem.Migrations
                 });
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Drops the Users table.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

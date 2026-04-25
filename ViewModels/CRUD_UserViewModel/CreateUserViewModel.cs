@@ -2,6 +2,10 @@
 
 namespace HospitalInformationSystem.ViewModels.CRUD_UserViewModel
 {
+    /// <summary>
+    /// View model for creating a new user account in the hospital management system.
+    /// Captures user details and assigns roles for authentication and authorization, managed by admin.
+    /// </summary>
     public class CreateUserViewModel
     {
         [Required]

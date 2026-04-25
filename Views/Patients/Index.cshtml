@@ -79,6 +79,12 @@
                 <td>
                     <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@p.Id">Edit</a>
                 </td>
+                <td>
+                    <a class="btn btn-sm btn-info"
+                       href="/Visits/Index?patientId=@p.Id">
+                        Visits
+                    </a>
+                </td>
             </tr>
         }
     </tbody>

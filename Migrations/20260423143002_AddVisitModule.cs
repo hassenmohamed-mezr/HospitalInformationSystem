@@ -5,10 +5,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HospitalInformationSystem.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Migration adding the Visits table for patient-doctor appointment management.
+    /// Links patients and doctors with visit details and status tracking.
+    /// </summary>
     public partial class AddVisitModule : Migration
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates the Visits table with foreign keys to Patients and DoctorProfiles, using restrict delete.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -54,7 +60,10 @@ namespace HospitalInformationSystem.Migrations
                 column: "PatientId");
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Drops the Visits table.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

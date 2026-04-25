@@ -12,9 +12,8 @@
 
         @if (ViewBag.VisitInfo != null)
         {
-            <div class="mb-3">
-                <label class="form-label">Visit</label>
-                <input class="form-control" value="@ViewBag.VisitInfo" readonly />
+            <div class="alert alert-info mb-3">
+                @ViewBag.VisitInfo
             </div>
         }
 
@@ -31,7 +30,10 @@
 
             <div class="mb-3">
                 <label asp-for="Status" class="form-label"></label>
-                <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<VisitStatus>()"></select>
+                <select asp-for="Status"
+                        class="form-select"
+                        asp-items="Html.GetEnumSelectList<VisitStatus>()">
+                </select>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
 

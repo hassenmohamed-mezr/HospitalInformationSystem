@@ -5,10 +5,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HospitalInformationSystem.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Migration enhancing the Patients table with additional profile fields.
+    /// Adds email, notes, profile image, and timestamp columns for better patient management.
+    /// </summary>
     public partial class EnhancePatientProfile : Migration
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Adds new columns to the Patients table for extended profile information.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
@@ -46,7 +52,10 @@ namespace HospitalInformationSystem.Migrations
                 nullable: true);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Removes the added columns from the Patients table.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

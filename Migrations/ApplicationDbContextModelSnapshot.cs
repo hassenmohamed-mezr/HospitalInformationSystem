@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HospitalInformationSystem.Migrations
 {
+    /// <summary>
+    /// Model snapshot for ApplicationDbContext, capturing the current database schema.
+    /// Used by EF Core for migration tracking and model consistency.
+    /// </summary>
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {

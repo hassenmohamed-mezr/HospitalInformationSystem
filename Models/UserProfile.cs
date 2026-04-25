@@ -2,6 +2,11 @@
 
 namespace HospitalInformationSystem.Models
 {
+    /// <summary>
+    /// Represents additional profile information for a user in the hospital management system.
+    /// Extends the User model with optional personal details such as contact information and bio,
+    /// used for administrative purposes or user display.
+    /// </summary>
     public class UserProfile
     {
         public int Id { get; set; }

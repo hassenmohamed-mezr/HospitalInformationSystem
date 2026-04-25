@@ -2,6 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalInformationSystem.ViewModels.CRUD_PatientViewMode
 {
+    /// <summary>
+    /// View model for creating a new patient record in the hospital management system.
+    /// Captures essential patient demographic and contact information for registration by reception staff.
+    /// </summary>
     public class CreatePatientViewModel
     {
         [Required]

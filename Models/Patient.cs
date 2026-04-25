@@ -2,6 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalInformationSystem.Models
 {
+    /// <summary>
+    /// Represents a patient in the hospital management system.
+    /// Contains demographic information, contact details, and tracks associated visits.
+    /// Created and managed by reception staff.
+    /// </summary>
     public class Patient
     {
         public int Id { get; set; }

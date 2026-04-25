@@ -5,10 +5,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HospitalInformationSystem.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Migration adding the UserProfiles table for extended user information.
+    /// Links to Users with a unique foreign key for additional profile details.
+    /// </summary>
     public partial class AddUserProfileRelation : Migration
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates the UserProfiles table with foreign key to Users and unique index on UserId.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -45,7 +51,10 @@ namespace HospitalInformationSystem.Migrations
                 unique: true);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Drops the UserProfiles table.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

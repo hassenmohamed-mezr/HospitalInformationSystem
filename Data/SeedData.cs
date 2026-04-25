@@ -3,8 +3,17 @@ using HospitalInformationSystem.Models;
 
 namespace HospitalInformationSystem.Data
 {
+    /// <summary>
+    /// Provides data seeding functionality for the hospital management system.
+    /// Initializes default user accounts for admin, doctor, and reception roles.
+    /// </summary>
     public static class SeedData
     {
+        /// <summary>
+        /// Seeds the database with initial user data if no users exist.
+        /// Creates default accounts for system testing and initial access.
+        /// </summary>
+        /// <param name="context">The application database context.</param>
         public static void Initialize(ApplicationDbContext context)
         {
             if (!context.Users.Any())

@@ -6,6 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalInformationSystem.Controllers
 {
+    /// <summary>
+    /// Controller for managing users in the hospital management system.
+    /// Provides CRUD operations for user accounts, accessible only to admin.
+    /// Ensures unique usernames and emails, with password hashing and soft deactivation.
+    /// </summary>
     public class UsersController : Controller
     {
         // Database context to perform CRUD operations on Users

@@ -2,6 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalInformationSystem.ViewModels.CRUD_PatientViewMode
 {
+    /// <summary>
+    /// View model for editing an existing patient record in the hospital management system.
+    /// Allows updating patient demographic and contact information by reception staff.
+    /// </summary>
     public class EditPatientViewModel
     {
         public int Id { get; set; }

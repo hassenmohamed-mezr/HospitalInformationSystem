@@ -2,6 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalInformationSystem.Models
 {
+    /// <summary>
+    /// Represents a doctor's profile in the hospital management system.
+    /// Extends the User model with doctor-specific details such as specialty and room assignment,
+    /// and tracks visits managed by the doctor.
+    /// </summary>
     public class DoctorProfile
     {
         public int Id { get; set; }

@@ -5,10 +5,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HospitalInformationSystem.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Migration adding the Patients table for storing patient records.
+    /// Includes a unique index on NationalId to prevent duplicates.
+    /// </summary>
     public partial class AddPatient : Migration
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates the Patients table with demographic fields and unique NationalId constraint.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -37,7 +43,10 @@ namespace HospitalInformationSystem.Migrations
                 unique: true);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Drops the Patients table.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

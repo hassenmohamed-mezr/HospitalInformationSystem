@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HospitalInformationSystem.Data
 {
+    /// <summary>
+    /// Entity Framework DbContext for the hospital management system.
+    /// Defines DbSets for all entities and configures relationships, indexes, and constraints.
+    /// </summary>
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -16,6 +20,11 @@ namespace HospitalInformationSystem.Data
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Visit> Visits { get; set; }
 
+        /// <summary>
+        /// Configures the model with relationships, unique indexes, and delete behaviors.
+        /// Ensures data integrity for users, patients, doctors, and visits.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder used to configure the entities.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

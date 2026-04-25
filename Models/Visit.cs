@@ -2,6 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalInformationSystem.Models
 {
+    /// <summary>
+    /// Represents a patient visit or appointment in the hospital management system.
+    /// Links a patient to a doctor, tracks visit details, status, and timestamps.
+    /// Created by reception and managed by doctors.
+    /// </summary>
     public class Visit
     {
         public int Id { get; set; }

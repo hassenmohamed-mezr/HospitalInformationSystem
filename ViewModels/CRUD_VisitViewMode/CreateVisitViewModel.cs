@@ -2,6 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalInformationSystem.ViewModels.CRUD_VisitViewMode
 {
+    /// <summary>
+    /// View model for scheduling a new patient visit in the hospital management system.
+    /// Associates a patient with a doctor, sets the appointment date and reason, handled by reception.
+    /// </summary>
     public class CreateVisitViewModel
     {
         [Required]

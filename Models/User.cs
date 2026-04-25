@@ -2,6 +2,10 @@
 
 namespace HospitalInformationSystem.Models
 {
+    /// <summary>
+    /// Represents a user in the hospital management system, used for authentication and role-based access control.
+    /// Users are staff members with roles such as Admin, Doctor, or Reception.
+    /// </summary>
     public class User
     {
         public int Id { get; set; }

@@ -2,11 +2,55 @@
     ViewData["Title"] = "Reception Dashboard";
 }
 
-<div class="card shadow">
+<div class="card shadow mb-3">
     <div class="card-body">
         <h2>Reception Dashboard</h2>
         <p class="text-muted">Welcome, Reception.</p>
 
-        <a class="btn btn-outline-danger" asp-controller="Auth" asp-action="Logout">Logout</a>
+        <a class="btn btn-outline-danger"
+           asp-controller="Auth"
+           asp-action="Logout">
+            Logout
+        </a>
     </div>
+</div>
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card text-white bg-primary shadow">
+            <div class="card-body">
+                <h6>Total Patients</h6>
+                <h3>@ViewBag.TotalPatients</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-info shadow">
+            <div class="card-body">
+                <h6>Today Visits</h6>
+                <h3>@ViewBag.TodayVisits</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-warning shadow">
+            <div class="card-body">
+                <h6>Pending Visits</h6>
+                <h3>@ViewBag.PendingVisits</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body">
+                <h6>Completed Visits</h6>
+                <h3>@ViewBag.CompletedVisits</h3>
+            </div>
+        </div>
+    </div>
+
 </div>

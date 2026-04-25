@@ -2,6 +2,10 @@
 
 namespace HospitalInformationSystem.ViewModels.CRUD_UserViewModel
 {
+    /// <summary>
+    /// View model for editing an existing user account in the hospital management system.
+    /// Allows updating user details and roles without changing the password, managed by admin.
+    /// </summary>
     public class EditUserViewModel
     {
         public int Id { get; set; }

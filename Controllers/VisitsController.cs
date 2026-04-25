@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HospitalInformationSystem.Controllers
 {
+    /// <summary>
+    /// Controller for managing patient visits in the hospital management system.
+    /// Reception creates visits, doctors update notes and status, all roles can view.
+    /// Ensures proper role-based access and data integrity.
+    /// </summary>
     public class VisitsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -41,6 +46,22 @@ namespace HospitalInformationSystem.Controllers
                 .FirstOrDefault(dp => dp.UserId == userId.Value);
 
             return doctorProfile?.Id;
+        }
+
+        // FIXED: Extracted reusable ownership check to prevent horizontal privilege escalation
+        private bool IsVisitAccessible(int visitId)
+        {
+            var role = GetRole();
+            if (role == "Admin" || role == "Reception")
+                return true;
+
+            if (role == "Doctor")
+            {
+                var doctorProfileId = GetCurrentDoctorProfileId();
+                return doctorProfileId.HasValue && _context.Visits.Any(v => v.Id == visitId && v.DoctorProfileId == doctorProfileId.Value);
+            }
+
+            return false;
         }
 
         private void LoadCreateDropdowns()
@@ -162,6 +183,7 @@ namespace HospitalInformationSystem.Controllers
             if (!doctorProfileId.HasValue)
                 return RedirectToAction("AccessDenied", "Auth");
 
+            // IMPROVED SECURITY: Enforce ownership at query level to prevent race conditions
             var visit = _context.Visits
                 .Include(v => v.Patient)
                 .Include(v => v.DoctorProfile)
@@ -196,6 +218,7 @@ namespace HospitalInformationSystem.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            // IMPROVED SECURITY: Enforce ownership at query level to prevent race conditions
             var visit = _context.Visits
                 .FirstOrDefault(v => v.Id == model.Id && v.DoctorProfileId == doctorProfileId.Value);
 
@@ -223,6 +246,7 @@ namespace HospitalInformationSystem.Controllers
                 .ThenInclude(dp => dp.User)
                 .AsQueryable();
 
+            // IMPROVED SECURITY: Apply authorization filter directly in query for doctors
             if (role == "Doctor")
             {
                 var doctorProfileId = GetCurrentDoctorProfileId();

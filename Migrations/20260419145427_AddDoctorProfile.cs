@@ -4,10 +4,16 @@
 
 namespace HospitalInformationSystem.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Migration adding the DoctorProfiles table for doctor-specific information.
+    /// Links to Users with a unique foreign key to ensure one profile per doctor.
+    /// </summary>
     public partial class AddDoctorProfile : Migration
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates the DoctorProfiles table with foreign key to Users and unique index on UserId.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -40,7 +46,10 @@ namespace HospitalInformationSystem.Migrations
                 unique: true);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Drops the DoctorProfiles table.
+        /// </summary>
+        /// <param name="migrationBuilder">The migration builder.</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

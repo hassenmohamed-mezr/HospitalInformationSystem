@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HospitalInformationSystem.Controllers
 {
+    /// <summary>
+    /// Controller for managing doctor profiles in the hospital management system.
+    /// Provides CRUD operations for doctor details, accessible only to admin users.
+    /// Ensures each doctor user has at most one profile.
+    /// </summary>
     public class DoctorsController : Controller
     {
         // DB context for doctor profiles and users

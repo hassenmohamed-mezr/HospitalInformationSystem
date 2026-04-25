@@ -6,6 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HospitalInformationSystem.Controllers
 {
+    /// <summary>
+    /// Controller for managing patients in the hospital management system.
+    /// Provides CRUD operations for patient records, with role-based access:
+    /// Admin and Reception can create/edit, all roles can view.
+    /// Ensures unique National ID and valid date of birth.
+    /// </summary>
     public class PatientsController : Controller
     {
         // DB context for Patients table

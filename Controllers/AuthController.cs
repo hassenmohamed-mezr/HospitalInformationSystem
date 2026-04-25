@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalInformationSystem.Controllers
 {
+    /// <summary>
+    /// Controller for user authentication and authorization in the hospital management system.
+    /// Manages login, logout, role-based redirection, and access control.
+    /// </summary>
     public class AuthController : Controller
     {
         // DB context to access Users table
@@ -46,10 +50,11 @@ namespace HospitalInformationSystem.Controllers
             var user = _context.Users.FirstOrDefault(u =>
                 u.Username == model.UsernameOrEmail || u.Email == model.UsernameOrEmail);
 
-            // Check if user exists and is active
+            // SECURITY FIX: Check IsActive to prevent inactive users from authenticating
+            // SECURITY FIX: Use generic error message to avoid user enumeration
             if (user == null || !user.IsActive)
             {
-                ViewBag.Error = "Invalid credentials or inactive account.";
+                ViewBag.Error = "Invalid credentials.";
                 return View(model);
             }
 

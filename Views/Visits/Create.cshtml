@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Create Visit";
+    var patientId = Context.Request.Query["patientId"].ToString();
 }
 
 <div class="card shadow">
@@ -12,13 +13,20 @@
         <form asp-action="Create" method="post">
             <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-            <div class="mb-3">
-                <label asp-for="PatientId" class="form-label">Patient</label>
-                <select asp-for="PatientId" class="form-select" asp-items="@(ViewBag.Patients)">
-                    <option value="">-- Select Patient --</option>
-                </select>
-                <span asp-validation-for="PatientId" class="text-danger"></span>
-            </div>
+            @if (!string.IsNullOrEmpty(patientId))
+            {
+                <input type="hidden" asp-for="PatientId" value="@patientId" />
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label asp-for="PatientId" class="form-label">Patient</label>
+                    <select asp-for="PatientId" class="form-select" asp-items="@(ViewBag.Patients)">
+                        <option value="">-- Select Patient --</option>
+                    </select>
+                    <span asp-validation-for="PatientId" class="text-danger"></span>
+                </div>
+            }
 
             <div class="mb-3">
                 <label asp-for="DoctorProfileId" class="form-label">Doctor</label>

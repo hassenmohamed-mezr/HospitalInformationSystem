@@ -2,6 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalInformationSystem.ViewModels.CRUD_DoctorProfileViewMode
 {
+    /// <summary>
+    /// View model for editing an existing doctor profile in the hospital management system.
+    /// Allows updating doctor-specific details while preserving the associated user link.
+    /// </summary>
     public class EditDoctorProfileViewModel
     {
         public int Id { get; set; }
