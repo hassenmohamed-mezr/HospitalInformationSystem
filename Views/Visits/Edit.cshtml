@@ -6,41 +6,173 @@
     ViewData["Title"] = "Edit Visit";
 }
 
-<div class="card shadow">
-    <div class="card-body">
-        <h2>Edit Visit</h2>
+<style>
 
-        @if (ViewBag.VisitInfo != null)
-        {
-            <div class="alert alert-info mb-3">
-                @ViewBag.VisitInfo
-            </div>
+    .edit-wrapper {
+        animation: fadeInUp 0.6s ease;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
 
-        <form asp-action="Edit" method="post">
-            <input type="hidden" asp-for="Id" />
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    .edit-card {
+        border: none;
+        border-radius: 20px;
+        transition: 0.3s ease;
+        overflow: hidden;
+    }
 
-            <div class="mb-3">
-                <label asp-for="Notes" class="form-label"></label>
-                <textarea asp-for="Notes" class="form-control" rows="5"></textarea>
-                <span asp-validation-for="Notes" class="text-danger"></span>
+        .edit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 55px rgba(0,0,0,0.12);
+        }
+
+    .header-bar {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        padding: 18px;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .context-box {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #e5e7eb;
+        font-size: 0.9rem;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        border-radius: 12px;
+        transition: 0.25s ease;
+    }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea:focus {
+            transform: scale(1.01);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99,102,241,0.15);
+        }
+
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #1f2937;
+    }
+
+    .btn-action {
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+</style>
+
+<div class="container py-4 edit-wrapper">
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-10 col-xl-7">
+
+            <div class="card edit-card shadow-lg">
+
+                <div class="header-bar">
+                    Edit Visit
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- CONTEXT INFO -->
+                    @if (ViewBag.VisitInfo != null)
+                    {
+                        <div class="context-box">
+                            @ViewBag.VisitInfo
+                        </div>
+                    }
+
+                    <form asp-action="Edit" method="post">
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="All"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <!-- NOTES -->
+                        <h5 class="section-title">Doctor Notes</h5>
+
+                        <div class="mb-3">
+
+                            <textarea asp-for="Notes"
+                                      class="form-control"
+                                      rows="5"
+                                      placeholder="Write clinical notes...">
+                            </textarea>
+
+                            <span asp-validation-for="Notes"
+                                  class="text-danger small"></span>
+
+                        </div>
+
+                        <!-- STATUS -->
+                        <h5 class="section-title">Visit Status</h5>
+
+                        <div class="mb-3">
+
+                            <select asp-for="Status"
+                                    class="form-select"
+                                    asp-items="Html.GetEnumSelectList<VisitStatus>()">
+                            </select>
+
+                            <span asp-validation-for="Status"
+                                  class="text-danger small"></span>
+
+                        </div>
+
+                        <!-- ACTIONS -->
+                        <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-action w-100">
+                                Save Changes
+                            </button>
+
+                            <a class="btn btn-secondary btn-action w-100"
+                               asp-action="Index">
+                                Back
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Status" class="form-label"></label>
-                <select asp-for="Status"
-                        class="form-select"
-                        asp-items="Html.GetEnumSelectList<VisitStatus>()">
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a class="btn btn-secondary" asp-action="Index">Back</a>
-        </form>
     </div>
+
 </div>
 
 @section Scripts {

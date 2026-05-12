@@ -2,81 +2,168 @@
     ViewData["Title"] = "Doctor Dashboard";
 }
 
-<div class="card shadow mb-3">
-    <div class="card-body">
-        <h2>Doctor Dashboard</h2>
-        <p class="text-muted">Welcome, Doctor.</p>
+<style>
 
-        <a class="btn btn-outline-danger"
+    .dashboard-wrapper {
+        animation: fadeIn 0.8s ease;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        border-radius: 16px;
+        padding: 25px;
+        transition: 0.3s ease;
+    }
+
+        .dashboard-header:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+    .stat-card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+        }
+
+        .stat-card h6 {
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        .stat-card h3 {
+            font-weight: 700;
+        }
+
+    .next-visit {
+        border-radius: 16px;
+        transition: 0.3s ease;
+    }
+
+        .next-visit:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+    .logout-btn {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+    }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(220,53,69,0.25);
+        }
+
+</style>
+
+<div class="container py-4 dashboard-wrapper">
+
+    <!-- HEADER -->
+    <div class="dashboard-header mb-4">
+
+        <h2 class="mb-1">Doctor Dashboard</h2>
+        <p class="mb-3 opacity-75">Welcome, Doctor.</p>
+
+        <a class="btn btn-outline-danger logout-btn"
            asp-controller="Auth"
            asp-action="Logout">
             Logout
         </a>
+
     </div>
+
+    <!-- STATS -->
+    <div class="row g-3">
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card text-white bg-primary">
+                <div class="card-body">
+                    <h6>Total Visits</h6>
+                    <h3>@ViewBag.TotalVisits</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card text-white bg-info">
+                <div class="card-body">
+                    <h6>Today Visits</h6>
+                    <h3>@ViewBag.TodayVisits</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card text-white bg-warning">
+                <div class="card-body">
+                    <h6>Pending</h6>
+                    <h3>@ViewBag.PendingVisits</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card text-white bg-success">
+                <div class="card-body">
+                    <h6>Completed</h6>
+                    <h3>@ViewBag.CompletedVisits</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NEXT VISIT -->
+    <div class="mt-4">
+
+        @if (ViewBag.NextVisit != null)
+        {
+            <div class="card next-visit border-0 shadow">
+
+                <div class="card-body p-4">
+
+                    <h5 class="mb-3">Next Visit</h5>
+
+                    <p class="mb-2">
+                        <strong>Patient:</strong>
+                        @ViewBag.NextVisit.Patient.FullName
+                    </p>
+
+                    <p class="mb-3">
+                        <strong>Date:</strong>
+                        @ViewBag.NextVisit.VisitDate.ToString("yyyy-MM-dd HH:mm")
+                    </p>
+
+                    <a class="btn btn-primary"
+                       href="/Visits/Edit/@ViewBag.NextVisit.Id">
+                        Open Visit
+                    </a>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
 </div>
-
-<div class="row">
-
-    <div class="col-md-3">
-        <div class="card text-white bg-primary shadow">
-            <div class="card-body">
-                <h6>Total Visits</h6>
-                <h3>@ViewBag.TotalVisits</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card text-white bg-info shadow">
-            <div class="card-body">
-                <h6>Today Visits</h6>
-                <h3>@ViewBag.TodayVisits</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card text-white bg-warning shadow">
-            <div class="card-body">
-                <h6>Pending</h6>
-                <h3>@ViewBag.PendingVisits</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card text-white bg-success shadow">
-            <div class="card-body">
-                <h6>Completed</h6>
-                <h3>@ViewBag.CompletedVisits</h3>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<hr />
-
-@if (ViewBag.NextVisit != null)
-{
-    <div class="card border-info shadow">
-        <div class="card-body">
-            <h5>Next Visit</h5>
-
-            <p>
-                <strong>Patient:</strong>
-                @ViewBag.NextVisit.Patient.FullName
-            </p>
-
-            <p>
-                <strong>Date:</strong>
-                @ViewBag.NextVisit.VisitDate.ToString("yyyy-MM-dd HH:mm")
-            </p>
-
-            <a class="btn btn-sm btn-primary"
-               href="/Visits/Edit/@ViewBag.NextVisit.Id">
-                Open Visit
-            </a>
-        </div>
-    </div>
-}

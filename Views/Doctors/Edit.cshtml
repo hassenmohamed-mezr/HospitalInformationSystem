@@ -5,48 +5,207 @@
     ViewData["Title"] = "Edit Doctor Profile";
 }
 
-<div class="card shadow">
-    <div class="card-body">
-        <h2>Edit Doctor Profile</h2>
+<style>
 
-        <div class="mb-3">
-            <label class="form-label">Doctor User</label>
-            <input class="form-control" value="@ViewBag.DoctorName" readonly />
+    .edit-wrapper {
+        animation: fadeInUp 0.7s ease;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .edit-card {
+        border: none;
+        border-radius: 18px;
+        transition: 0.3s ease;
+    }
+
+        .edit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+        }
+
+    .section-title {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control,
+    .form-check-input {
+        border-radius: 12px;
+    }
+
+    .form-control {
+        height: 48px;
+        transition: 0.25s ease;
+    }
+
+        .form-control:focus {
+            transform: scale(1.01);
+            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+        }
+
+    .readonly-box {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+    }
+
+    .btn-action {
+        border-radius: 12px;
+        padding: 10px 18px;
+        transition: 0.3s ease;
+    }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+    .btn-primary:hover {
+        box-shadow: 0 10px 25px rgba(13,110,253,0.25);
+    }
+
+    .btn-secondary:hover {
+        box-shadow: 0 10px 25px rgba(108,117,125,0.25);
+    }
+
+    .readonly-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+</style>
+
+<div class="container py-4 edit-wrapper">
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-8 col-xl-6">
+
+            <div class="card edit-card shadow">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <h2 class="section-title text-center mb-4">
+                        Edit Doctor Profile
+                    </h2>
+
+                    <!-- READONLY SECTION -->
+                    <div class="mb-4">
+
+                        <label class="form-label readonly-label">
+                            Doctor User
+                        </label>
+
+                        <input class="form-control readonly-box"
+                               value="@ViewBag.DoctorName"
+                               readonly />
+
+                    </div>
+
+                    <form asp-action="Edit" method="post">
+
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UserId" />
+
+                        <div asp-validation-summary="All"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <!-- Specialty -->
+                        <div class="mb-3">
+
+                            <label asp-for="Specialty" class="form-label"></label>
+
+                            <input asp-for="Specialty"
+                                   class="form-control"
+                                   placeholder="Specialty" />
+
+                            <span asp-validation-for="Specialty"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <!-- Room -->
+                        <div class="mb-3">
+
+                            <label asp-for="Room" class="form-label"></label>
+
+                            <input asp-for="Room"
+                                   class="form-control"
+                                   placeholder="Room number" />
+
+                            <span asp-validation-for="Room"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="mb-3">
+
+                            <label asp-for="YearsOfExperience" class="form-label"></label>
+
+                            <input asp-for="YearsOfExperience"
+                                   class="form-control"
+                                   type="number"
+                                   min="0"
+                                   placeholder="Years of experience" />
+
+                            <span asp-validation-for="YearsOfExperience"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <!-- Active -->
+                        <div class="form-check mb-4">
+
+                            <input asp-for="IsActive"
+                                   class="form-check-input" />
+
+                            <label asp-for="IsActive"
+                                   class="form-check-label">
+                            </label>
+
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-action w-100">
+                                Save Changes
+                            </button>
+
+                            <a class="btn btn-secondary btn-action w-100"
+                               asp-action="Index">
+                                Back
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <form asp-action="Edit" method="post">
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="UserId" />
-
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
-            <div class="mb-3">
-                <label asp-for="Specialty" class="form-label"></label>
-                <input asp-for="Specialty" class="form-control" />
-                <span asp-validation-for="Specialty" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Room" class="form-label"></label>
-                <input asp-for="Room" class="form-control" />
-                <span asp-validation-for="Room" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="YearsOfExperience" class="form-label"></label>
-                <input asp-for="YearsOfExperience" class="form-control" type="number" min="0" />
-                <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
-            </div>
-
-            <div class="form-check mb-3">
-                <input asp-for="IsActive" class="form-check-input" />
-                <label asp-for="IsActive" class="form-check-label"></label>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a class="btn btn-secondary" asp-action="Index">Back</a>
-        </form>
     </div>
+
 </div>
 
 @section Scripts {

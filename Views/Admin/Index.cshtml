@@ -2,14 +2,46 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="card shadow">
-    <div class="card-body">
-        <h2>Admin Dashboard</h2>
-        <p class="text-muted">Welcome to the Hospital Information System.</p>
+<div class="container py-4">
 
-        <div class="mt-4">
-            <a class="btn btn-primary me-2" asp-controller="Users" asp-action="Index">Manage Users</a>
-            <a class="btn btn-outline-danger" asp-controller="Auth" asp-action="Logout">Logout</a>
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body p-4 p-md-5 text-center">
+
+                    <h2 class="mb-3">
+                        Admin Dashboard
+                    </h2>
+
+                    <p class="text-muted mb-4">
+                        Welcome to the Hospital Information System.
+                    </p>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+
+                        <a class="btn btn-primary"
+                           asp-controller="Users"
+                           asp-action="Index">
+                            Manage Users
+                        </a>
+
+                        <a class="btn btn-outline-danger"
+                           asp-controller="Auth"
+                           asp-action="Logout">
+                            Logout
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
+
 </div>

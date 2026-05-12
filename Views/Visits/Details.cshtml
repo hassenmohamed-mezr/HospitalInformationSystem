@@ -4,37 +4,159 @@
     ViewData["Title"] = "Visit Details";
 }
 
-<div class="card shadow">
-    <div class="card-body">
-        <h2>Visit Details</h2>
+<style>
 
-        <dl class="row">
-            <dt class="col-sm-3">Patient</dt>
-            <dd class="col-sm-9">@Model.Patient.FullName</dd>
+    .details-wrapper {
+        animation: fadeInUp 0.6s ease;
+    }
 
-            <dt class="col-sm-3">Doctor</dt>
-            <dd class="col-sm-9">@Model.DoctorProfile.User.FullName</dd>
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-            <dt class="col-sm-3">Visit Date</dt>
-            <dd class="col-sm-9">@Model.VisitDate.ToString("yyyy-MM-dd HH:mm")</dd>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-            <dt class="col-sm-3">Reason</dt>
-            <dd class="col-sm-9">
-                @(string.IsNullOrWhiteSpace(Model.Reason) ? "—" : Model.Reason)
-            </dd>
+    .details-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: 0.3s ease;
+    }
 
-            <dt class="col-sm-3">Notes</dt>
-            <dd class="col-sm-9">
-                @(string.IsNullOrWhiteSpace(Model.Notes) ? "—" : Model.Notes)
-            </dd>
+        .details-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 55px rgba(0,0,0,0.12);
+        }
 
-            <dt class="col-sm-3">Status</dt>
-            <dd class="col-sm-9">@Model.Status</dd>
-        </dl>
+    .header-bar {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        padding: 18px;
+        text-align: center;
+        font-weight: 700;
+    }
 
-        <a class="btn btn-secondary"
-           href="/Visits/Index?patientId=@Model.PatientId">
-            Back to Patient Visits
-        </a>
+    .info-label {
+        font-weight: 600;
+        color: #6b7280;
+    }
+
+    .info-value {
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .status-badge {
+        padding: 6px 10px;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .back-btn {
+        border-radius: 12px;
+        padding: 10px 16px;
+        transition: 0.3s ease;
+        font-weight: 600;
+    }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+
+</style>
+
+<div class="container py-4 details-wrapper">
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-10 col-xl-8">
+
+            <div class="card details-card shadow-lg">
+
+                <div class="header-bar">
+                    Visit Details
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+
+                            <div class="mb-3">
+                                <div class="info-label">Patient</div>
+                                <div class="info-value">
+                                    @Model.Patient.FullName
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="info-label">Doctor</div>
+                                <div class="info-value">
+                                    @Model.DoctorProfile.User.FullName
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="info-label">Visit Date</div>
+                                <div class="info-value">
+                                    @Model.VisitDate.ToString("yyyy-MM-dd HH:mm")
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 col-md-6">
+
+                            <div class="mb-3">
+                                <div class="info-label">Reason</div>
+                                <div class="info-value">
+                                    @(string.IsNullOrWhiteSpace(Model.Reason) ? "—" : Model.Reason)
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="info-label">Notes</div>
+                                <div class="info-value">
+                                    @(string.IsNullOrWhiteSpace(Model.Notes) ? "—" : Model.Notes)
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="info-label">Status</div>
+
+                                <div>
+                                    <span class="status-badge bg-primary text-white">
+                                        @Model.Status
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <a class="btn btn-secondary back-btn w-100"
+                       href="/Visits/Index?patientId=@Model.PatientId">
+                        Back to Patient Visits
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
 </div>
