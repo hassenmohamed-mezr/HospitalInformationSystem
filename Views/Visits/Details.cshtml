@@ -4,84 +4,16 @@
     ViewData["Title"] = "Visit Details";
 }
 
-<style>
-
-    .details-wrapper {
-        animation: fadeInUp 0.6s ease;
-    }
-
-    @@keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .details-card {
-        border: none;
-        border-radius: 20px;
-        overflow: hidden;
-        transition: 0.3s ease;
-    }
-
-        .details-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 55px rgba(0,0,0,0.12);
-        }
-
-    .header-bar {
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: white;
-        padding: 18px;
-        text-align: center;
-        font-weight: 700;
-    }
-
-    .info-label {
-        font-weight: 600;
-        color: #6b7280;
-    }
-
-    .info-value {
-        font-weight: 500;
-        color: #111827;
-    }
-
-    .status-badge {
-        padding: 6px 10px;
-        border-radius: 10px;
-        font-weight: 600;
-        display: inline-block;
-    }
-
-    .back-btn {
-        border-radius: 12px;
-        padding: 10px 16px;
-        transition: 0.3s ease;
-        font-weight: 600;
-    }
-
-        .back-btn:hover {
-            transform: translateY(-2px);
-        }
-
-</style>
-
-<div class="container py-4 details-wrapper">
+<div class="container py-4 app-page">
 
     <div class="row justify-content-center">
 
         <div class="col-12 col-lg-10 col-xl-8">
 
-            <div class="card details-card shadow-lg">
+            <div class="card app-card shadow-lg">
 
-                <div class="header-bar">
-                    Visit Details
+                <div class="app-card-header">
+                    <h2 class="app-page-title mb-0">Visit Details</h2>
                 </div>
 
                 <div class="card-body p-4 p-md-5">
@@ -91,22 +23,22 @@
                         <div class="col-12 col-md-6">
 
                             <div class="mb-3">
-                                <div class="info-label">Patient</div>
-                                <div class="info-value">
+                                <div class="text-muted fw-semibold">Patient</div>
+                                <div class="fw-semibold">
                                     @Model.Patient.FullName
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <div class="info-label">Doctor</div>
-                                <div class="info-value">
+                                <div class="text-muted fw-semibold">Doctor</div>
+                                <div class="fw-semibold">
                                     @Model.DoctorProfile.User.FullName
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <div class="info-label">Visit Date</div>
-                                <div class="info-value">
+                                <div class="text-muted fw-semibold">Visit Date</div>
+                                <div class="fw-semibold">
                                     @Model.VisitDate.ToString("yyyy-MM-dd HH:mm")
                                 </div>
                             </div>
@@ -116,28 +48,24 @@
                         <div class="col-12 col-md-6">
 
                             <div class="mb-3">
-                                <div class="info-label">Reason</div>
-                                <div class="info-value">
+                                <div class="text-muted fw-semibold">Reason</div>
+                                <div class="fw-semibold">
                                     @(string.IsNullOrWhiteSpace(Model.Reason) ? "—" : Model.Reason)
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <div class="info-label">Notes</div>
-                                <div class="info-value">
+                                <div class="text-muted fw-semibold">Notes</div>
+                                <div class="fw-semibold">
                                     @(string.IsNullOrWhiteSpace(Model.Notes) ? "—" : Model.Notes)
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <div class="info-label">Status</div>
-
-                                <div>
-                                    <span class="status-badge bg-primary text-white">
-                                        @Model.Status
-                                    </span>
-                                </div>
-
+                                <div class="text-muted fw-semibold">Status</div>
+                                <span class="app-badge-status bg-primary text-white">
+                                    @Model.Status
+                                </span>
                             </div>
 
                         </div>
@@ -146,7 +74,7 @@
 
                     <hr class="my-4" />
 
-                    <a class="btn btn-secondary back-btn w-100"
+                    <a class="btn btn-secondary w-100"
                        href="/Visits/Index?patientId=@Model.PatientId">
                         Back to Patient Visits
                     </a>

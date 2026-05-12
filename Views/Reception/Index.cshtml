@@ -1,56 +1,201 @@
 ﻿@{
     ViewData["Title"] = "Reception Dashboard";
+    var todayLabel = DateTime.Today.ToString("dddd, MMMM d, yyyy");
+    var username = Context.Session.GetString("Username") ?? "Reception";
+    var queue = ViewBag.AppointmentQueue as IEnumerable<Appointment> ?? Enumerable.Empty<Appointment>();
+    var recentPatients = ViewBag.RecentPatients as IEnumerable<Patient> ?? Enumerable.Empty<Patient>();
 }
 
-<div class="card shadow mb-3">
-    <div class="card-body">
-        <h2>Reception Dashboard</h2>
-        <p class="text-muted">Welcome, Reception.</p>
+<div class="app-page dashboard-page">
+    <header class="dashboard-hero mb-4">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-3">
+            <div>
+                <p class="small text-uppercase fw-semibold mb-1 opacity-75 letter-spacing-tight">Front desk</p>
+                <h1 class="h3 mb-1 fw-bold">Reception dashboard</h1>
+                <p class="dashboard-hero-meta mb-0">
+                    <span class="fw-semibold text-white">@username</span>
+                    <span class="mx-2">·</span>
+                    @todayLabel
+                </p>
+            </div>
+            <span class="badge rounded-pill text-bg-light text-dark px-3 py-2 align-self-lg-center">
+                <i class="bi bi-building me-1" aria-hidden="true"></i> Patient services
+            </span>
+        </div>
+    </header>
 
-        <a class="btn btn-outline-danger"
-           asp-controller="Auth"
-           asp-action="Logout">
-            Logout
-        </a>
-    </div>
-</div>
+    <section class="mb-4" aria-labelledby="rec-kpi-heading">
+        <h2 id="rec-kpi-heading" class="visually-hidden">Front desk KPIs</h2>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3">
+            <div class="col">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Total patients",
+                    Value = $"{ViewBag.TotalPatients}",
+                    IconClass = "bi-people",
+                    Accent = "primary",
+                    TrendText = $"{ViewBag.ActivePatients} active on file",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "New patients today",
+                    Value = $"{ViewBag.NewPatients}",
+                    IconClass = "bi-person-plus",
+                    Accent = "success",
+                    TrendText = "Registered today",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Appointments today",
+                    Value = $"{ViewBag.TodayAppointments}",
+                    IconClass = "bi-calendar-day",
+                    Accent = "info",
+                    TrendText = $"{ViewBag.ConfirmedAppointments} confirmed",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Pending today",
+                    Value = $"{ViewBag.PendingAppointments}",
+                    IconClass = "bi-hourglass-split",
+                    Accent = "warning",
+                    TrendText = "Awaiting check-in or confirmation",
+                    TrendCss = ViewBag.PendingAppointments is int pendingToday && pendingToday > 0 ? "text-warning" : "text-muted"
+                })
+            </div>
+            <div class="col">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Completed today",
+                    Value = $"{ViewBag.CompletedAppointments}",
+                    IconClass = "bi-check2-circle",
+                    Accent = "success",
+                    TrendText = "Closed appointments",
+                    TrendCss = "text-muted"
+                })
+            </div>
+        </div>
+    </section>
 
-<div class="row">
-
-    <div class="col-md-3">
-        <div class="card text-white bg-primary shadow">
-            <div class="card-body">
-                <h6>Total Patients</h6>
-                <h3>@ViewBag.TotalPatients</h3>
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm rounded-3 border-0 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex flex-wrap justify-content-between align-items-start gap-2">
+                    <div>
+                        <h3 class="dashboard-section-title mb-0">Today’s appointment queue</h3>
+                        <p class="small text-muted mb-0">Earliest first · excludes cancelled</p>
+                    </div>
+                    <a class="btn btn-sm btn-outline-primary rounded-pill" asp-controller="Appointments" asp-action="Index">Full list</a>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Time</th>
+                                    <th scope="col">Patient</th>
+                                    <th scope="col">Doctor</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col" class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var a in queue)
+                                {
+                                    var docName = a.DoctorProfile?.User?.FullName ?? "—";
+                                    var badge = a.Status switch
+                                    {
+                                        AppointmentStatus.Pending => "text-bg-warning",
+                                        AppointmentStatus.Confirmed => "text-bg-primary",
+                                        AppointmentStatus.Completed => "text-bg-success",
+                                        _ => "text-bg-secondary"
+                                    };
+                                    <tr>
+                                        <td class="fw-semibold text-nowrap">@a.AppointmentDateTime.ToString("HH:mm")</td>
+                                        <td>@a.Patient.FullName</td>
+                                        <td class="text-muted small">@docName</td>
+                                        <td><span class="badge rounded-pill @badge">@a.Status</span></td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-secondary rounded-pill" asp-controller="Appointments" asp-action="Details" asp-route-id="@a.Id">Open</a>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!queue.Any())
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted small py-4">No appointments scheduled for today.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm rounded-3 border-0 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h3 class="dashboard-section-title mb-0">Recently registered</h3>
+                    <p class="small text-muted mb-0">Latest patient records</p>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var p in recentPatients)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <div class="min-w-0 me-2">
+                                    <div class="fw-semibold text-truncate">@p.FullName</div>
+                                    <div class="small text-muted">@p.PhoneNumber</div>
+                                    <div class="small text-muted">@p.CreatedAt.ToString("MMM d, yyyy HH:mm")</div>
+                                </div>
+                                <a class="btn btn-sm btn-outline-primary rounded-pill flex-shrink-0" asp-controller="Patients" asp-action="Edit" asp-route-id="@p.Id">Record</a>
+                            </li>
+                        }
+                        @if (!recentPatients.Any())
+                        {
+                            <li class="list-group-item px-0 text-muted small text-center py-4">No patients yet.</li>
+                        }
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card text-white bg-info shadow">
-            <div class="card-body">
-                <h6>Today Visits</h6>
-                <h3>@ViewBag.TodayVisits</h3>
+    <section aria-labelledby="rec-quick-heading">
+        <h2 id="rec-quick-heading" class="dashboard-section-title">Quick actions</h2>
+        <div class="row g-3 dashboard-quick-grid">
+            <div class="col-6 col-md-3">
+                <a class="btn btn-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3 shadow-sm" asp-controller="Appointments" asp-action="Create">
+                    <i class="bi bi-calendar-plus fs-5" aria-hidden="true"></i>
+                    <span>Create appointment</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="btn btn-outline-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3" asp-controller="Patients" asp-action="Create">
+                    <i class="bi bi-person-plus fs-5" aria-hidden="true"></i>
+                    <span>Register patient</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="btn btn-outline-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3" asp-controller="Visits" asp-action="Index">
+                    <i class="bi bi-journal-text fs-5" aria-hidden="true"></i>
+                    <span>View visits</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="btn btn-outline-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3" asp-controller="Appointments" asp-action="Index">
+                    <i class="bi bi-kanban fs-5" aria-hidden="true"></i>
+                    <span>Manage appointments</span>
+                </a>
             </div>
         </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card text-white bg-warning shadow">
-            <div class="card-body">
-                <h6>Pending Visits</h6>
-                <h3>@ViewBag.PendingVisits</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card text-white bg-success shadow">
-            <div class="card-body">
-                <h6>Completed Visits</h6>
-                <h3>@ViewBag.CompletedVisits</h3>
-            </div>
-        </div>
-    </div>
-
+    </section>
 </div>

@@ -4,255 +4,100 @@
     ViewData["Title"] = "Doctors";
 }
 
-<style>
+<div class="container py-4 app-page">
 
-    .page-wrapper {
-        animation: fadeIn 0.6s ease;
-    }
-
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(15px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-        .page-header h2 {
-            font-weight: 700;
-        }
-
-    .action-btns .btn {
-        border-radius: 12px;
-        transition: 0.3s ease;
-    }
-
-        .action-btns .btn:hover {
-            transform: translateY(-2px);
-        }
-
-    .card-modern {
-        border: none;
-        border-radius: 16px;
-        transition: 0.3s ease;
-    }
-
-        .card-modern:hover {
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-        }
-
-    .form-control {
-        border-radius: 12px;
-        height: 45px;
-    }
-
-    .btn {
-        border-radius: 12px;
-    }
-
-    table {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    tbody tr {
-        transition: 0.2s ease;
-    }
-
-        tbody tr:hover {
-            background-color: #f8f9fa;
-            transform: scale(1.01);
-        }
-
-    .badge {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 10px;
-    }
-
-    /* Mobile responsiveness */
-    @@media (max-width: 768px) {
-
-        table {
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-    }
-
-</style>
-
-<div class="container py-4 page-wrapper">
-
-    <!-- HEADER -->
-    <div class="page-header">
-
-        <h2>Doctors</h2>
-
-        <div class="action-btns d-flex gap-2">
-
+    <div class="app-page-header">
+        <h2 class="app-page-title">Doctors</h2>
+        <div class="app-page-actions">
             <a class="btn btn-success"
                asp-action="Create">
                 Add Doctor Profile
             </a>
-
             <a class="btn btn-secondary"
                asp-controller="Admin"
                asp-action="Index">
                 Back
             </a>
-
         </div>
-
     </div>
 
-    <!-- SEARCH -->
-    <div class="card card-modern shadow-sm mb-4">
-
-        <div class="card-header bg-light border-0">
+    <div class="card app-card shadow-sm mb-4">
+        <div class="app-card-header">
             <strong>Search</strong>
         </div>
-
         <div class="card-body">
-
             <form asp-action="Search"
                   method="get"
                   class="row g-3">
-
                 <div class="col-12 col-md-6">
-
                     <label class="form-label">Doctor Name</label>
-
                     <input type="text"
                            class="form-control"
                            name="fullName"
                            value="@ViewBag.FullName" />
-
                 </div>
-
                 <div class="col-12 col-md-6">
-
                     <label class="form-label">Specialty</label>
-
                     <input type="text"
                            class="form-control"
                            name="specialty"
                            value="@ViewBag.Specialty" />
-
                 </div>
-
                 <div class="col-12 d-flex gap-2 flex-wrap">
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Search
-                    </button>
-
-                    <a class="btn btn-outline-secondary"
-                       asp-action="Index">
-                        Clear
-                    </a>
-
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a class="btn btn-outline-secondary" asp-action="Index">Clear</a>
                 </div>
-
             </form>
-
         </div>
-
     </div>
 
-    <!-- TABLE -->
-    <div class="card card-modern shadow-sm">
-
-        <div class="card-body p-0">
-
-            <div class="table-responsive">
-
-                <table class="table table-striped table-hover align-middle mb-0">
-
-                    <thead class="table-dark">
-
+    <div class="card app-card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0 app-table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Specialty</th>
+                        <th>Room</th>
+                        <th>Experience</th>
+                        <th>Status</th>
+                        <th class="action-cell">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model)
+                    {
                         <tr>
-                            <th>Doctor</th>
-                            <th>Specialty</th>
-                            <th>Room</th>
-                            <th>Experience</th>
-                            <th>Status</th>
-                            <th style="width:120px;">Actions</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        @foreach (var d in Model)
-                        {
-                            <tr>
-
-                                <td>
-                                    <strong>@d.User.FullName</strong><br />
-                                    <small class="text-muted">@d.User.Username</small>
-                                </td>
-
-                                <td>@d.Specialty</td>
-
-                                <td>@(string.IsNullOrEmpty(d.Room) ? "—" : d.Room)</td>
-
-                                <td>
-                                    @(d.YearsOfExperience.HasValue
-                                                                    ? $"{d.YearsOfExperience} years"
-                                                                    : "—")
+                            <td>
+                                <strong>@d.User.FullName</strong><br />
+                                <small class="text-muted">@d.User.Username</small>
                             </td>
-
-                                <td>
+                            <td>@d.Specialty</td>
+                            <td>@(string.IsNullOrEmpty(d.Room) ? "—" : d.Room)</td>
+                            <td>@(d.YearsOfExperience.HasValue ? $"{d.YearsOfExperience} years" : "—")</td>
+                            <td>
                                 @if (d.IsActive)
-                                    {
-                                        <span class="badge bg-success">Active</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger">Inactive</span>
-                                    }
-                                </td>
-
-                                <td>
-                                    <a class="btn btn-sm btn-primary"
-                                       asp-action="Edit"
-                                       asp-route-id="@d.Id">
-                                        Edit
-                                    </a>
-                                </td>
-
-                            </tr>
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+                                {
+                                    <span class="app-badge-status bg-success text-white">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="app-badge-status bg-danger text-white">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@d.Id">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-
     </div>
 
-    <!-- EMPTY STATE -->
     @if (Model.Count == 0)
     {
-        <div class="text-center text-muted mt-4">
+        <div class="app-empty-state">
             No doctor profiles found.
         </div>
     }

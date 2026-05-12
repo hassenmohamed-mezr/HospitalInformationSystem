@@ -1,47 +1,248 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
+    var todayLabel = DateTime.Today.ToString("dddd, MMMM d, yyyy");
+    var username = Context.Session.GetString("Username") ?? "Admin";
+    var recentUsers = ViewBag.RecentUsers as IEnumerable<User> ?? Enumerable.Empty<User>();
+    var recentPatients = ViewBag.RecentPatients as IEnumerable<Patient> ?? Enumerable.Empty<Patient>();
+    var recentVisits = ViewBag.RecentVisits as IEnumerable<Visit> ?? Enumerable.Empty<Visit>();
+    var activeRate = (int)(ViewBag.ActiveUserRatePercent ?? 0);
 }
 
-<div class="container py-4">
-
-    <div class="row justify-content-center">
-
-        <div class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
-
-            <div class="card shadow border-0">
-
-                <div class="card-body p-4 p-md-5 text-center">
-
-                    <h2 class="mb-3">
-                        Admin Dashboard
-                    </h2>
-
-                    <p class="text-muted mb-4">
-                        Welcome to the Hospital Information System.
-                    </p>
-
-                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-
-                        <a class="btn btn-primary"
-                           asp-controller="Users"
-                           asp-action="Index">
-                            Manage Users
-                        </a>
-
-                        <a class="btn btn-outline-danger"
-                           asp-controller="Auth"
-                           asp-action="Logout">
-                            Logout
-                        </a>
-
-                    </div>
-
-                </div>
-
+<div class="app-page dashboard-page">
+    <header class="dashboard-hero mb-4">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-3">
+            <div>
+                <p class="small text-uppercase fw-semibold mb-1 opacity-75 letter-spacing-tight">Administrator</p>
+                <h1 class="h3 mb-1 fw-bold">Operations overview</h1>
+                <p class="dashboard-hero-meta mb-0">
+                    Signed in as <span class="fw-semibold text-white">@username</span>
+                    <span class="mx-2">·</span>
+                    @todayLabel
+                </p>
             </div>
-
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge rounded-pill text-bg-light text-dark px-3 py-2">
+                    <i class="bi bi-shield-check me-1" aria-hidden="true"></i> Admin access
+                </span>
+            </div>
         </div>
+    </header>
 
+    <section class="mb-4" aria-labelledby="kpi-heading">
+        <h2 id="kpi-heading" class="visually-hidden">Key performance indicators</h2>
+        <div class="row g-3">
+            <div class="col-6 col-xl-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Total users",
+                    Value = $"{ViewBag.TotalUsers}",
+                    IconClass = "bi-people",
+                    Accent = "primary",
+                    TrendText = $"{activeRate}% active accounts",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col-6 col-xl-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Active users",
+                    Value = $"{ViewBag.ActiveUsers}",
+                    IconClass = "bi-person-check",
+                    Accent = "success",
+                    TrendText = ViewBag.TotalUsers is int tu && tu > 0 ? $"{ViewBag.ActiveUsers} of {tu} enabled" : "No users yet",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col-6 col-xl-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Total patients",
+                    Value = $"{ViewBag.TotalPatients}",
+                    IconClass = "bi-heart-pulse",
+                    Accent = "info",
+                    TrendText = "Master patient index",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col-6 col-xl-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Total doctors",
+                    Value = $"{ViewBag.TotalDoctors}",
+                    IconClass = "bi-clipboard2-pulse",
+                    Accent = "primary",
+                    TrendText = "Clinical staff profiles",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col-6 col-md-4">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Visits today",
+                    Value = $"{ViewBag.TodayVisits}",
+                    IconClass = "bi-calendar2-check",
+                    Accent = "warning",
+                    TrendText = "Recorded for today",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col-6 col-md-4">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Appointments",
+                    Value = $"{ViewBag.TotalAppointments}",
+                    IconClass = "bi-calendar3",
+                    Accent = "info",
+                    TrendText = $"{ViewBag.PendingAppointments} pending system-wide",
+                    TrendCss = ViewBag.PendingAppointments is int pendingAppt && pendingAppt > 0 ? "text-warning" : "text-muted"
+                })
+            </div>
+            <div class="col-12 col-md-4">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "System activity (today)",
+                    Value = $"{ViewBag.SystemActivityToday}",
+                    IconClass = "bi-activity",
+                    Accent = "success",
+                    TrendText = "Visits + new patients + scheduled appts",
+                    TrendCss = "text-muted"
+                })
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm rounded-3 border-0 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h3 class="dashboard-section-title mb-0">Latest staff accounts</h3>
+                    <p class="small text-muted mb-0">Most recently added users</p>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col" class="text-end">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in recentUsers)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@u.FullName</div>
+                                            <div class="small text-muted">@u.Email</div>
+                                        </td>
+                                        <td><span class="badge text-bg-secondary rounded-pill">@u.Role</span></td>
+                                        <td class="text-end">
+                                            @if (u.IsActive)
+                                            {
+                                                <span class="badge text-bg-success rounded-pill">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge text-bg-danger rounded-pill">Disabled</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!recentUsers.Any())
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-muted small py-4 text-center">No users found.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm rounded-3 border-0 mb-4">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h3 class="dashboard-section-title mb-0">Recent registrations</h3>
+                    <p class="small text-muted mb-0">New patients (latest)</p>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var p in recentPatients)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-semibold">@p.FullName</span>
+                                    <div class="small text-muted">@p.CreatedAt.ToString("MMM d, yyyy HH:mm")</div>
+                                </div>
+                                <a class="btn btn-sm btn-outline-primary rounded-pill" asp-controller="Patients" asp-action="Edit" asp-route-id="@p.Id">Open record</a>
+                            </li>
+                        }
+                        @if (!recentPatients.Any())
+                        {
+                            <li class="list-group-item px-0 text-muted small text-center py-3">No patient records yet.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="card shadow-sm rounded-3 border-0">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h3 class="dashboard-section-title mb-0">Visit pulse</h3>
+                    <p class="small text-muted mb-0">Today and tomorrow</p>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <ul class="dashboard-timeline">
+                        @foreach (var v in recentVisits)
+                        {
+                            <li class="dashboard-timeline-item">
+                                <div class="dashboard-timeline-time">@v.VisitDate.ToString("HH:mm")</div>
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="fw-semibold text-truncate">@v.Patient.FullName</div>
+                                    <div class="small text-muted text-truncate">
+                                        Dr. @v.DoctorProfile.User.FullName · @v.Status
+                                    </div>
+                                </div>
+                                <a class="btn btn-sm btn-outline-secondary rounded-pill flex-shrink-0" asp-controller="Visits" asp-action="Details" asp-route-id="@v.Id">Open</a>
+                            </li>
+                        }
+                        @if (!recentVisits.Any())
+                        {
+                            <li class="text-muted small text-center py-3">No recent visits in this window.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <section class="mb-4" aria-labelledby="quick-heading">
+        <h2 id="quick-heading" class="dashboard-section-title">Quick actions</h2>
+        <div class="row g-3 dashboard-quick-grid">
+            <div class="col-6 col-md-3">
+                <a class="btn btn-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3 shadow-sm" asp-controller="Users" asp-action="Index">
+                    <i class="bi bi-people-fill fs-5" aria-hidden="true"></i>
+                    <span>Manage users</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="btn btn-outline-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3" asp-controller="Doctors" asp-action="Index">
+                    <i class="bi bi-clipboard2-pulse fs-5" aria-hidden="true"></i>
+                    <span>Manage doctors</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2 py-3 rounded-3" disabled title="Coming soon">
+                    <i class="bi bi-graph-up-arrow fs-5" aria-hidden="true"></i>
+                    <span>View reports</span>
+                </button>
+            </div>
+            <div class="col-6 col-md-3">
+                <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2 py-3 rounded-3" disabled title="Coming soon">
+                    <i class="bi bi-sliders fs-5" aria-hidden="true"></i>
+                    <span>System settings</span>
+                </button>
+            </div>
+        </div>
+    </section>
 </div>

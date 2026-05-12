@@ -49,5 +49,7 @@ namespace HospitalInformationSystem.Models
         public bool IsActive { get; set; } = true;
 
         public ICollection<Visit> Visits { get; set; } = new List<Visit>();
+
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 }

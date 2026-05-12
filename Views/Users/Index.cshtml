@@ -4,110 +4,19 @@
     ViewData["Title"] = "Users Management";
 }
 
-<style>
+<div class="container py-3 app-page">
 
-    .users-wrapper {
-        animation: fadeInUp 0.6s ease;
-    }
-
-    @@keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .page-title {
-        font-weight: 700;
-        margin: 0;
-    }
-
-    .table-card {
-        border: none;
-        border-radius: 16px;
-        overflow: hidden;
-    }
-
-    .table thead {
-        background: #111827;
-        color: white;
-    }
-
-    .table tbody tr {
-        transition: 0.2s ease;
-    }
-
-        .table tbody tr:hover {
-            background: #f1f5f9;
-            transform: scale(1.002);
-        }
-
-    .badge {
-        padding: 6px 10px;
-        border-radius: 10px;
-        font-weight: 600;
-    }
-
-    .action-btn {
-        border-radius: 10px;
-        padding: 4px 10px;
-        font-size: 0.85rem;
-        transition: 0.2s ease;
-    }
-
-        .action-btn:hover {
-            transform: translateY(-1px);
-        }
-
-</style>
-
-<div class="container py-3 users-wrapper">
-
-    <!-- HEADER -->
-    <div class="page-header">
-
-        <h2 class="page-title">
-            Users Management
-        </h2>
-
-        <div class="d-flex gap-2 flex-wrap">
-
-            <a class="btn btn-success"
-               asp-action="Create">
-                + Add New User
-            </a>
-
-            <a class="btn btn-secondary"
-               asp-controller="Admin"
-               asp-action="Index">
-                Back
-            </a>
-
+    <div class="app-page-header">
+        <h2 class="app-page-title">Users Management</h2>
+        <div class="app-page-actions">
+            <a class="btn btn-success" asp-action="Create">+ Add New User</a>
+            <a class="btn btn-secondary" asp-controller="Admin" asp-action="Index">Back</a>
         </div>
-
     </div>
 
-    <!-- TABLE CARD -->
-    <div class="card table-card shadow">
-
+    <div class="card app-card shadow">
         <div class="table-responsive">
-
-            <table class="table table-hover align-middle mb-0">
-
+            <table class="table table-hover align-middle mb-0 app-table">
                 <thead>
                     <tr>
                         <th>Full Name</th>
@@ -115,78 +24,35 @@
                         <th>Email</th>
                         <th>Role</th>
                         <th>Status</th>
-                        <th style="width:180px;">Actions</th>
+                        <th class="action-cell">Actions</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
                     @foreach (var user in Model)
                     {
                         <tr>
-
-                            <td class="fw-semibold">
-                                @user.FullName
-                            </td>
-
+                            <td class="fw-semibold">@user.FullName</td>
+                            <td>@user.Username</td>
+                            <td>@user.Email</td>
                             <td>
-                                @user.Username
+                                <span class="app-badge-status bg-primary text-white">@user.Role</span>
                             </td>
-
                             <td>
-                                @user.Email
-                            </td>
-
-                            <td>
-                                <span class="badge bg-primary">
-                                    @user.Role
+                                <span class="app-badge-status @(user.IsActive ? "bg-success text-white" : "bg-danger text-white")">
+                                    @(user.IsActive ? "Active" : "Inactive")
                                 </span>
                             </td>
-
                             <td>
-                                @if (user.IsActive)
-                                {
-                                    <span class="badge bg-success">
-                                        Active
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">
-                                        Inactive
-                                    </span>
-                                }
-                            </td>
-
-                            <td>
-
-                                <div class="d-flex gap-2 flex-wrap">
-
-                                    <a class="btn btn-sm btn-primary action-btn"
-                                       asp-action="Edit"
-                                       asp-route-id="@user.Id">
-                                        Edit
-                                    </a>
-
-                                    <a class="btn btn-sm btn-warning action-btn"
-                                       asp-action="Deactivate"
-                                       asp-route-id="@user.Id">
-                                        Disable
-                                    </a>
-
+                                <div class="app-action-group">
+                                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                                    <a class="btn btn-sm btn-warning" asp-action="Deactivate" asp-route-id="@user.Id">Disable</a>
                                 </div>
-
                             </td>
-
                         </tr>
                     }
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
 
 </div>

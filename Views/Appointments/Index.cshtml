@@ -1,0 +1,135 @@
+@model IEnumerable<HospitalInformationSystem.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<div class="container py-3 app-page">
+
+    <div class="app-page-header">
+        <h2 class="app-page-title">📅 Appointments</h2>
+        <div class="app-page-actions">
+            @if (User.IsInRole("Reception") || User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-success">+ New Appointment</a>
+            }
+        </div>
+    </div>
+
+    <div class="card app-card shadow mb-4">
+        <div class="app-card-header">
+            <strong>Filter Appointments</strong>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-12 col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-control">
+                        <option value="">All Statuses</option>
+                        @foreach (var status in Enum.GetValues(typeof(HospitalInformationSystem.Models.AppointmentStatus)))
+                        {
+                            <option value="@status" selected="@(ViewBag.Status == status.ToString() ? "selected" : null)">@status</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="dateFrom" value="@ViewBag.DateFrom" class="form-control" />
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="dateTo" value="@ViewBag.DateTo" class="form-control" />
+                </div>
+                <div class="col-12 col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary w-100">🔍 Filter</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card app-card shadow">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 app-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date & Time</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th class="action-cell">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@appointment.Patient.FullName</td>
+                                <td>@appointment.DoctorProfile.User.FullName<br/><small class="text-muted">@appointment.DoctorProfile.Specialty</small></td>
+                                <td>@appointment.AppointmentDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td><span class="badge bg-secondary">@appointment.Duration min</span></td>
+                                <td>
+                                    @switch (appointment.Status)
+                                    {
+                                        case HospitalInformationSystem.Models.AppointmentStatus.Pending:
+                                            <span class="badge bg-warning">⏳ Pending</span>
+                                            break;
+                                        case HospitalInformationSystem.Models.AppointmentStatus.Confirmed:
+                                            <span class="badge bg-info">✓ Confirmed</span>
+                                            break;
+                                        case HospitalInformationSystem.Models.AppointmentStatus.Cancelled:
+                                            <span class="badge bg-danger">✕ Cancelled</span>
+                                            break;
+                                        case HospitalInformationSystem.Models.AppointmentStatus.Completed:
+                                            <span class="badge bg-success">✓ Completed</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    <div class="app-action-group">
+                                        <a asp-action="Details" asp-route-id="@appointment.Id" class="btn btn-sm btn-info">View</a>
+                                        @if ((User.IsInRole("Reception") || User.IsInRole("Admin")) && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Pending)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@appointment.Id" class="btn btn-sm btn-warning">Edit</a>
+                                        }
+                                        @if ((User.IsInRole("Doctor") || User.IsInRole("Reception") || User.IsInRole("Admin")) && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Pending)
+                                        {
+                                            <form asp-action="Confirm" asp-route-id="@appointment.Id" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                                            </form>
+                                            <form asp-action="Cancel" asp-route-id="@appointment.Id" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                            </form>
+                                        }
+                                        @if ((User.IsInRole("Doctor") || User.IsInRole("Reception") || User.IsInRole("Admin")) && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Confirmed)
+                                        {
+                                            <form asp-action="Complete" asp-route-id="@appointment.Id" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-primary">Complete</button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="app-empty-state">
+            <h5>📭 No Appointments Found</h5>
+            <p>No appointments match your criteria. Try adjusting your filters.</p>
+            @if (User.IsInRole("Reception") || User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-primary">Create First Appointment</a>
+            }
+        </div>
+    }
+
+</div>

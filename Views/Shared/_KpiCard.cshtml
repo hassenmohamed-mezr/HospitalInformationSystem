@@ -1,0 +1,27 @@
+@model KpiCardViewModel
+@{
+    var accent = Model.Accent?.ToLowerInvariant() ?? "primary";
+    var iconWrap = accent switch
+    {
+        "success" => "bg-success bg-opacity-10 text-success",
+        "warning" => "bg-warning bg-opacity-10 text-warning",
+        "danger" => "bg-danger bg-opacity-10 text-danger",
+        "info" => "bg-info bg-opacity-10 text-info",
+        _ => "bg-primary bg-opacity-10 text-primary"
+    };
+}
+<div class="card shadow-sm rounded-3 border-0 h-100 dashboard-kpi-card">
+    <div class="card-body d-flex align-items-start gap-3">
+        <div class="rounded-3 p-3 flex-shrink-0 @iconWrap">
+            <i class="bi @Model.IconClass fs-4" aria-hidden="true"></i>
+        </div>
+        <div class="flex-grow-1 min-w-0">
+            <p class="text-muted text-uppercase small mb-1 fw-semibold letter-spacing-tight">@Model.Title</p>
+            <h3 class="h4 mb-1 fw-bold text-body">@Model.Value</h3>
+            @if (!string.IsNullOrWhiteSpace(Model.TrendText))
+            {
+                <span class="small @Model.TrendCss">@Model.TrendText</span>
+            }
+        </div>
+    </div>
+</div>

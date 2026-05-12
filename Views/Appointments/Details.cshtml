@@ -1,0 +1,98 @@
+@model HospitalInformationSystem.Models.Appointment
+
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<div class="container py-3 app-page">
+
+    <div class="app-page-header">
+        <h2 class="app-page-title">📋 Appointment Details</h2>
+    </div>
+
+    <div class="row" style="max-width: 800px; margin: 0 auto;">
+
+        <!-- Main Details Card -->
+        <div class="col-12 mb-3">
+            <div class="card app-card shadow border-0">
+
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Appointment Information</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Patient</h6>
+                            <p class="fs-5 fw-semibold">@Model.Patient.FullName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Status</h6>
+                            <div>
+                                @switch (Model.Status)
+                                {
+                                    case HospitalInformationSystem.Models.AppointmentStatus.Pending:
+                                        <span class="badge bg-warning fs-6">⏳ Pending</span>
+                                        break;
+                                    case HospitalInformationSystem.Models.AppointmentStatus.Confirmed:
+                                        <span class="badge bg-info fs-6">✓ Confirmed</span>
+                                        break;
+                                    case HospitalInformationSystem.Models.AppointmentStatus.Cancelled:
+                                        <span class="badge bg-danger fs-6">✕ Cancelled</span>
+                                        break;
+                                    case HospitalInformationSystem.Models.AppointmentStatus.Completed:
+                                        <span class="badge bg-success fs-6">✓ Completed</span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Doctor</h6>
+                            <p class="fs-5 fw-semibold">@Model.DoctorProfile.User.FullName</p>
+                            <small class="text-muted">@Model.DoctorProfile.Specialty</small>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Date & Time</h6>
+                            <p class="fs-5 fw-semibold">@Model.AppointmentDateTime.ToString("yyyy-MM-dd HH:mm")</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Duration</h6>
+                            <p class="fs-5 fw-semibold">@Model.Duration minutes</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Created</h6>
+                            <p class="fs-5 fw-semibold">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <hr />
+                        <h6 class="text-muted text-uppercase small fw-bold mb-2">Notes</h6>
+                        <p class="text-muted" style="white-space: pre-wrap;">@Model.Notes</p>
+                    }
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="col-12">
+            <div class="d-flex gap-2 flex-wrap">
+                <a asp-action="Index" class="btn btn-outline-secondary">← Back to List</a>
+            </div>
+        </div>
+
+    </div>
+
+</div>

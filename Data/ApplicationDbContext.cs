@@ -19,6 +19,7 @@ namespace HospitalInformationSystem.Data
         public DbSet<DoctorProfile> DoctorProfiles { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Visit> Visits { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
 
         /// <summary>
         /// Configures the model with relationships, unique indexes, and delete behaviors.
@@ -58,6 +59,22 @@ namespace HospitalInformationSystem.Data
                 .WithMany(dp => dp.Visits)
                 .HasForeignKey(v => v.DoctorProfileId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Patient)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(a => a.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.DoctorProfile)
+                .WithMany(dp => dp.Appointments)
+                .HasForeignKey(a => a.DoctorProfileId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Index for conflict checking
+            modelBuilder.Entity<Appointment>()
+                .HasIndex(a => new { a.DoctorProfileId, a.AppointmentDateTime });
         }
     }
 }

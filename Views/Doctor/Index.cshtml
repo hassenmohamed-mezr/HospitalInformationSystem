@@ -1,169 +1,209 @@
 ﻿@{
     ViewData["Title"] = "Doctor Dashboard";
+    var todayLabel = DateTime.Today.ToString("dddd, MMMM d, yyyy");
+    var username = Context.Session.GetString("Username") ?? "Doctor";
+    var nextAppt = ViewBag.NextAppointment as Appointment;
+    var timeline = ViewBag.TodayTimeline as IReadOnlyList<DoctorScheduleLineViewModel> ?? Array.Empty<DoctorScheduleLineViewModel>();
+    var recentTreated = ViewBag.RecentTreatedVisits as IEnumerable<Visit> ?? Enumerable.Empty<Visit>();
+    var confirmed = (int)(ViewBag.ConfirmedAppointments ?? 0);
+    var pending = (int)(ViewBag.PendingAppointments ?? 0);
 }
 
-<style>
+<div class="app-page dashboard-page">
+    <header class="dashboard-hero mb-4">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-3">
+            <div>
+                <p class="small text-uppercase fw-semibold mb-1 opacity-75 letter-spacing-tight">Clinical workspace</p>
+                <h1 class="h3 mb-1 fw-bold">Doctor dashboard</h1>
+                <p class="dashboard-hero-meta mb-0">
+                    <span class="fw-semibold text-white">@username</span>
+                    <span class="mx-2">·</span>
+                    @todayLabel
+                </p>
+            </div>
+            <span class="badge rounded-pill text-bg-light text-dark px-3 py-2 align-self-lg-center">
+                <i class="bi bi-stethoscope me-1" aria-hidden="true"></i> Attending physician
+            </span>
+        </div>
+    </header>
 
-    .dashboard-wrapper {
-        animation: fadeIn 0.8s ease;
-    }
-
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .dashboard-header {
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: white;
-        border-radius: 16px;
-        padding: 25px;
-        transition: 0.3s ease;
-    }
-
-        .dashboard-header:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-    .stat-card {
-        border: none;
-        border-radius: 16px;
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
-
-        .stat-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 20px 45px rgba(0,0,0,0.15);
-        }
-
-        .stat-card h6 {
-            opacity: 0.9;
-            font-weight: 600;
-        }
-
-        .stat-card h3 {
-            font-weight: 700;
-        }
-
-    .next-visit {
-        border-radius: 16px;
-        transition: 0.3s ease;
-    }
-
-        .next-visit:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-    .logout-btn {
-        transition: all 0.3s ease;
-        border-radius: 12px;
-    }
-
-        .logout-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(220,53,69,0.25);
-        }
-
-</style>
-
-<div class="container py-4 dashboard-wrapper">
-
-    <!-- HEADER -->
-    <div class="dashboard-header mb-4">
-
-        <h2 class="mb-1">Doctor Dashboard</h2>
-        <p class="mb-3 opacity-75">Welcome, Doctor.</p>
-
-        <a class="btn btn-outline-danger logout-btn"
-           asp-controller="Auth"
-           asp-action="Logout">
-            Logout
-        </a>
-
-    </div>
-
-    <!-- STATS -->
-    <div class="row g-3">
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card stat-card text-white bg-primary">
-                <div class="card-body">
-                    <h6>Total Visits</h6>
-                    <h3>@ViewBag.TotalVisits</h3>
-                </div>
+    <section class="mb-4" aria-labelledby="doc-kpi-heading">
+        <h2 id="doc-kpi-heading" class="visually-hidden">Clinical KPIs</h2>
+        <div class="row g-3">
+            <div class="col-6 col-lg-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "My appointments",
+                    Value = $"{ViewBag.TotalAppointments}",
+                    IconClass = "bi-calendar3",
+                    Accent = "primary",
+                    TrendText = $"{confirmed} confirmed · {pending} pending",
+                    TrendCss = pending > 0 ? "text-warning" : "text-muted"
+                })
+            </div>
+            <div class="col-6 col-lg-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Today’s appointments",
+                    Value = $"{ViewBag.TodayAppointments}",
+                    IconClass = "bi-calendar-day",
+                    Accent = "info",
+                    TrendText = "Scheduled for today",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col-6 col-lg-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Pending appointments",
+                    Value = $"{ViewBag.PendingAppointments}",
+                    IconClass = "bi-hourglass-split",
+                    Accent = "warning",
+                    TrendText = "Awaiting confirmation",
+                    TrendCss = "text-muted"
+                })
+            </div>
+            <div class="col-6 col-lg-3">
+                @await Html.PartialAsync("_KpiCard", new KpiCardViewModel
+                {
+                    Title = "Completed visits",
+                    Value = $"{ViewBag.CompletedVisits}",
+                    IconClass = "bi-check2-circle",
+                    Accent = "success",
+                    TrendText = "All-time completed encounters",
+                    TrendCss = "text-muted"
+                })
             </div>
         </div>
+    </section>
 
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card stat-card text-white bg-info">
-                <div class="card-body">
-                    <h6>Today Visits</h6>
-                    <h3>@ViewBag.TodayVisits</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card stat-card text-white bg-warning">
-                <div class="card-body">
-                    <h6>Pending</h6>
-                    <h3>@ViewBag.PendingVisits</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card stat-card text-white bg-success">
-                <div class="card-body">
-                    <h6>Completed</h6>
-                    <h3>@ViewBag.CompletedVisits</h3>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- NEXT VISIT -->
-    <div class="mt-4">
-
-        @if (ViewBag.NextVisit != null)
-        {
-            <div class="card next-visit border-0 shadow">
-
-                <div class="card-body p-4">
-
-                    <h5 class="mb-3">Next Visit</h5>
-
-                    <p class="mb-2">
-                        <strong>Patient:</strong>
-                        @ViewBag.NextVisit.Patient.FullName
+    @if (nextAppt != null)
+    {
+        <section class="dashboard-spotlight p-4 mb-4" aria-labelledby="next-appt-heading">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3">
+                <div>
+                    <h2 id="next-appt-heading" class="h5 fw-bold mb-1">
+                        <i class="bi bi-alarm text-primary me-2" aria-hidden="true"></i> Next appointment
+                    </h2>
+                    <p class="mb-0 text-muted">
+                        @nextAppt.AppointmentDateTime.ToString("HH:mm") · @(nextAppt.Patient?.FullName ?? "Patient")
                     </p>
-
-                    <p class="mb-3">
-                        <strong>Date:</strong>
-                        @ViewBag.NextVisit.VisitDate.ToString("yyyy-MM-dd HH:mm")
-                    </p>
-
-                    <a class="btn btn-primary"
-                       href="/Visits/Edit/@ViewBag.NextVisit.Id">
-                        Open Visit
-                    </a>
-
                 </div>
-
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <span class="badge rounded-pill @(
+                        nextAppt.Status == AppointmentStatus.Pending ? "text-bg-warning" :
+                        nextAppt.Status == AppointmentStatus.Confirmed ? "text-bg-primary" :
+                        nextAppt.Status == AppointmentStatus.Completed ? "text-bg-success" :
+                        "text-bg-secondary")">@nextAppt.Status</span>
+                    <a class="btn btn-primary rounded-pill px-4" asp-controller="Appointments" asp-action="Details" asp-route-id="@nextAppt.Id">Open slot</a>
+                </div>
             </div>
-        }
+        </section>
+    }
+    else
+    {
+        <div class="alert alert-light border rounded-3 shadow-sm mb-4 d-flex align-items-center gap-2" role="status">
+            <i class="bi bi-calendar-x text-muted fs-4" aria-hidden="true"></i>
+            <div>No upcoming appointments on your calendar. Check pending requests or your full schedule.</div>
+        </div>
+    }
 
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm rounded-3 border-0 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h3 class="dashboard-section-title mb-0">Today’s schedule</h3>
+                    <p class="small text-muted mb-0">Appointments and visits, chronological</p>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <ul class="dashboard-timeline">
+                        @foreach (var line in timeline)
+                        {
+                            <li class="dashboard-timeline-item">
+                                <div class="dashboard-timeline-time">@line.At.ToString("HH:mm")</div>
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                        <span class="fw-semibold text-truncate">@line.PatientName</span>
+                                        @if (line.Kind == "Appointment")
+                                        {
+                                            <span class="badge text-bg-primary rounded-pill">Appointment</span>
+                                            @if (line.AppointmentStatus.HasValue)
+                                            {
+                                                var s = line.AppointmentStatus.Value;
+                                                <span class="badge rounded-pill @(s == AppointmentStatus.Pending ? "text-bg-warning" : s == AppointmentStatus.Confirmed ? "text-bg-info" : s == AppointmentStatus.Completed ? "text-bg-success" : "text-bg-secondary")">@s</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge text-bg-dark rounded-pill">Visit</span>
+                                            @if (line.VisitStatus.HasValue)
+                                            {
+                                                var vs = line.VisitStatus.Value;
+                                                <span class="badge rounded-pill @(vs == VisitStatus.Completed ? "text-bg-success" : vs == VisitStatus.Pending ? "text-bg-warning" : vs == VisitStatus.InProgress ? "text-bg-primary" : "text-bg-secondary")">@vs</span>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <a class="btn btn-sm btn-outline-primary rounded-pill flex-shrink-0" asp-controller="@line.DetailController" asp-action="@line.DetailAction" asp-route-id="@line.EntityId">View</a>
+                            </li>
+                        }
+                        @if (timeline.Count == 0)
+                        {
+                            <li class="text-muted small text-center py-4">Nothing on your calendar for today.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm rounded-3 border-0 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h3 class="dashboard-section-title mb-0">Recently treated</h3>
+                    <p class="small text-muted mb-0">Latest completed visits</p>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var v in recentTreated)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <div class="min-w-0 me-2">
+                                    <div class="fw-semibold text-truncate">@v.Patient.FullName</div>
+                                    <div class="small text-muted">@v.VisitDate.ToString("MMM d, HH:mm")</div>
+                                </div>
+                                <a class="btn btn-sm btn-outline-secondary rounded-pill flex-shrink-0" asp-controller="Visits" asp-action="Edit" asp-route-id="@v.Id">Notes</a>
+                            </li>
+                        }
+                        @if (!recentTreated.Any())
+                        {
+                            <li class="list-group-item px-0 text-muted small text-center py-4">No completed visits yet.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <section aria-labelledby="doc-quick-heading">
+        <h2 id="doc-quick-heading" class="dashboard-section-title">Quick actions</h2>
+        <div class="row g-3 dashboard-quick-grid">
+            <div class="col-md-4">
+                <a class="btn btn-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3 shadow-sm" asp-controller="Appointments" asp-action="Index">
+                    <i class="bi bi-calendar3 fs-5" aria-hidden="true"></i>
+                    <span>My appointments</span>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a class="btn btn-outline-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3" asp-controller="Visits" asp-action="Index">
+                    <i class="bi bi-journal-medical fs-5" aria-hidden="true"></i>
+                    <span>Update visit notes</span>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a class="btn btn-outline-primary w-100 d-flex align-items-center gap-2 py-3 rounded-3" asp-controller="Patients" asp-action="Index">
+                    <i class="bi bi-people fs-5" aria-hidden="true"></i>
+                    <span>Patient directory</span>
+                </a>
+            </div>
+        </div>
+    </section>
 </div>
