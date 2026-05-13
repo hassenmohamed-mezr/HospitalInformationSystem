@@ -1,0 +1,77 @@
+@{
+    var askUrl = Url.Action("Ask", "Chat") ?? "/Chat/Ask";
+}
+
+<div id="floating-chat-root"
+     class="floating-chat"
+     data-chat-ask-url="@askUrl">
+
+    <button type="button"
+            id="floating-chat-fab"
+            class="floating-chat__fab"
+            aria-expanded="false"
+            aria-controls="floating-chat-panel"
+            title="Hospital assistant">
+        <i class="bi bi-chat-heart-fill" aria-hidden="true"></i>
+        <span class="visually-hidden">Open hospital assistant</span>
+    </button>
+
+    <div id="floating-chat-panel"
+         class="floating-chat__panel"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="floating-chat-title"
+         aria-hidden="true">
+
+        <header class="floating-chat__header">
+            <div class="min-w-0">
+                <h2 id="floating-chat-title" class="floating-chat__title">Hospital assistant</h2>
+                <p class="floating-chat__subtitle text-muted mb-0">Guides you through this system</p>
+            </div>
+            <div class="floating-chat__header-actions">
+                <button type="button"
+                        class="floating-chat__icon-btn"
+                        id="floating-chat-minimize"
+                        title="Minimize"
+                        aria-label="Minimize assistant">
+                    <i class="bi bi-dash-lg" aria-hidden="true"></i>
+                </button>
+                <button type="button"
+                        class="floating-chat__icon-btn"
+                        id="floating-chat-close"
+                        title="Close and clear chat"
+                        aria-label="Close and clear chat">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+        </header>
+
+        <div id="floating-chat-messages"
+             class="floating-chat__messages"
+             role="log"
+             aria-relevant="additions"
+             aria-live="polite">
+        </div>
+
+        <div id="floating-chat-typing-host" class="floating-chat__typing-host"></div>
+
+        <footer class="floating-chat__composer">
+            <label for="floating-chat-input" class="visually-hidden">Your message</label>
+            <input type="text"
+                   id="floating-chat-input"
+                   class="form-control"
+                   maxlength="2000"
+                   autocomplete="off"
+                   placeholder="Ask about workflows, roles, navigation…" />
+            <button type="button"
+                    class="btn btn-primary floating-chat__send"
+                    id="floating-chat-send"
+                    title="Send"
+                    aria-label="Send message">
+                <i class="bi bi-send-fill" aria-hidden="true"></i>
+            </button>
+        </footer>
+    </div>
+</div>
+
+<script type="module" src="~/js/floating-chat/app.js" asp-append-version="true"></script>

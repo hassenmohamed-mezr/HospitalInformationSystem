@@ -20,12 +20,9 @@ app = FastAPI()
 # =========================
 # 1. GEMINI CONFIG (SECURE)
 # =========================
-GEMINI_API_KEY = "AIzaSyBIW0uuZ28Q5c4-IsBTPP5VtR9Tyw7sPd4"
 
-if not GEMINI_API_KEY:
-    raise ValueError("Missing GEMINI_API_KEY in environment variables")
 
-genai.configure(api_key=GEMINI_API_KEY)
+genai.configure(api_key = os.getenv("GEMINI_API_KEY"))
 
 llm = genai.GenerativeModel(
     model_name="gemini-2.5-flash"

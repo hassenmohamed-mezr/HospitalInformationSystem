@@ -1,48 +1,48 @@
 ﻿@{
-    ViewData["Title"] = "Chat";
+    ViewData["Title"] = "Assistant";
+    var role = Context.Session.GetString("Role");
 }
 
-<h2>Hospital AI Chat</h2>
+<div class="app-page">
+    <header class="app-page-header">
+        <div>
+            <h1 class="app-page-title">Hospital assistant</h1>
+            <p class="text-muted mb-0">The assistant is available from the floating button in the corner while you work.</p>
+        </div>
+    </header>
 
-<div style="width:600px;margin:auto">
-
-    <div id="chatBox" style="border:1px solid #ccc;height:400px;overflow:auto;padding:10px"></div>
-
-    <input id="msg" style="width:80%" placeholder="Ask something..." />
-    <button onclick="sendMessage()">Send</button>
-
+    <div class="card app-card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="app-card-header d-flex align-items-start gap-3">
+            <div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary flex-shrink-0">
+                <i class="bi bi-chat-dots fs-3" aria-hidden="true"></i>
+            </div>
+            <div>
+                <h2 class="h5 mb-1 fw-bold">How to use it</h2>
+                <p class="small text-muted mb-0">
+                    Look for the circular chat button at the bottom-right of the screen. Open it anytime for quick answers about hospital workflows—without leaving your current page.
+                </p>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <p class="mb-3">Return to your dashboard anytime; the assistant stays one click away.</p>
+            <div class="d-flex flex-wrap gap-2">
+                @if (role == "Admin")
+                {
+                    <a class="btn btn-primary rounded-3" asp-controller="Admin" asp-action="Index">Back to dashboard</a>
+                }
+                else if (role == "Doctor")
+                {
+                    <a class="btn btn-primary rounded-3" asp-controller="Doctor" asp-action="Index">Back to dashboard</a>
+                }
+                else if (role == "Reception")
+                {
+                    <a class="btn btn-primary rounded-3" asp-controller="Reception" asp-action="Index">Back to dashboard</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary rounded-3" asp-controller="Auth" asp-action="Login">Sign in</a>
+                }
+            </div>
+        </div>
+    </div>
 </div>
-
-<script>
-    async function sendMessage() {
-
-        const message = document.getElementById("msg").value;
-
-        appendMessage("You", message);
-
-        const response = await fetch("/Chat/Ask", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ question: message })
-        });
-
-        const data = await response.json();
-
-        const reply =
-            typeof data.answer === "string"
-                ? data.answer
-                : (data.detail != null ? JSON.stringify(data.detail) : "Request failed.");
-
-        appendMessage("AI", reply);
-
-        document.getElementById("msg").value = "";
-    }
-
-    function appendMessage(sender, text) {
-        const box = document.getElementById("chatBox");
-        box.innerHTML += `<p><b>${sender}:</b> ${text}</p>`;
-        box.scrollTop = box.scrollHeight;
-    }
-</script>
