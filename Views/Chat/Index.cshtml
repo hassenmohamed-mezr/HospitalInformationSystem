@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Chat";
+}
+
+<h2>Hospital AI Chat</h2>
+
+<div style="width:600px;margin:auto">
+
+    <div id="chatBox" style="border:1px solid #ccc;height:400px;overflow:auto;padding:10px"></div>
+
+    <input id="msg" style="width:80%" placeholder="Ask something..." />
+    <button onclick="sendMessage()">Send</button>
+
+</div>
+
+<script>
+    async function sendMessage() {
+
+        const message = document.getElementById("msg").value;
+
+        appendMessage("You", message);
+
+        const response = await fetch("/Chat/Ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ question: message })
+        });
+
+        const data = await response.json();
+
+        const reply =
+            typeof data.answer === "string"
+                ? data.answer
+                : (data.detail != null ? JSON.stringify(data.detail) : "Request failed.");
+
+        appendMessage("AI", reply);
+
+        document.getElementById("msg").value = "";
+    }
+
+    function appendMessage(sender, text) {
+        const box = document.getElementById("chatBox");
+        box.innerHTML += `<p><b>${sender}:</b> ${text}</p>`;
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
