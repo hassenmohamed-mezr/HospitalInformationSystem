@@ -291,6 +291,18 @@ textarea:focus {
   width: 180px;
 }
 
+.app-table-appointments .action-cell {
+  width: auto;
+  min-width: 12rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 1199.98px) {
+  .app-table-appointments .app-action-group {
+    justify-content: flex-end !important;
+  }
+}
+
 /* ——— Role dashboards (shared) ——— */
 .dashboard-page {
   margin-bottom: 2.5rem;

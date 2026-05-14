@@ -2,134 +2,226 @@
 
 @{
     ViewData["Title"] = "Appointments";
+    var role = Context.Session.GetString("Role");
+    var canManage = role == "Admin" || role == "Reception";
+    var canWorkflow = role == "Doctor" || role == "Admin" || role == "Reception";
+    var hasFilters = !string.IsNullOrEmpty(ViewBag.Status as string)
+        || !string.IsNullOrEmpty(ViewBag.DateFrom as string)
+        || !string.IsNullOrEmpty(ViewBag.DateTo as string);
 }
 
 <div class="container py-3 app-page">
 
-    <div class="app-page-header">
-        <h2 class="app-page-title">📅 Appointments</h2>
+    <div class="app-page-header align-items-start align-items-md-center">
+        <div>
+            <h2 class="app-page-title mb-1">Appointments</h2>
+            <p class="text-muted small mb-0">Schedule and manage patient appointments</p>
+        </div>
         <div class="app-page-actions">
-            @if (User.IsInRole("Reception") || User.IsInRole("Admin"))
+            @if (canManage)
             {
-                <a asp-action="Create" class="btn btn-success">+ New Appointment</a>
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="bi bi-calendar-plus me-1"></i>
+                    Add Appointment
+                </a>
             }
+            <a class="btn btn-outline-secondary"
+               asp-action="Index"
+               asp-route-status="@ViewBag.Status"
+               asp-route-dateFrom="@ViewBag.DateFrom"
+               asp-route-dateTo="@ViewBag.DateTo"
+               title="Reload with current filters">
+                <i class="bi bi-arrow-clockwise me-1"></i>
+                Refresh
+            </a>
         </div>
     </div>
 
     <div class="card app-card shadow mb-4">
-        <div class="app-card-header">
-            <strong>Filter Appointments</strong>
+        <div class="app-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <strong>Search &amp; filters</strong>
+            @if (hasFilters)
+            {
+                <span class="badge rounded-pill bg-light text-dark border">Filtered</span>
+            }
         </div>
         <div class="card-body">
-            <form method="get" class="row g-3">
+            <form method="get" class="row g-3 align-items-end">
                 <div class="col-12 col-md-3">
                     <label class="form-label">Status</label>
-                    <select name="status" class="form-control">
-                        <option value="">All Statuses</option>
-                        @foreach (var status in Enum.GetValues(typeof(HospitalInformationSystem.Models.AppointmentStatus)))
+                    <select name="status" class="form-select">
+                        <option value="">All statuses</option>
+                        @foreach (HospitalInformationSystem.Models.AppointmentStatus st in Enum.GetValues(typeof(HospitalInformationSystem.Models.AppointmentStatus)))
                         {
-                            <option value="@status" selected="@(ViewBag.Status == status.ToString() ? "selected" : null)">@status</option>
+                            var sv = st.ToString();
+                            <option value="@sv" selected="@(ViewBag.Status as string == sv ? "selected" : null)">@st</option>
                         }
                     </select>
                 </div>
                 <div class="col-12 col-md-3">
-                    <label class="form-label">From Date</label>
+                    <label class="form-label">From date</label>
                     <input type="date" name="dateFrom" value="@ViewBag.DateFrom" class="form-control" />
                 </div>
                 <div class="col-12 col-md-3">
-                    <label class="form-label">To Date</label>
+                    <label class="form-label">To date</label>
                     <input type="date" name="dateTo" value="@ViewBag.DateTo" class="form-control" />
                 </div>
-                <div class="col-12 col-md-3 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary w-100">🔍 Filter</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary w-100">Clear</a>
+                <div class="col-12 col-md-3 d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="bi bi-search me-1"></i>
+                        Apply
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary flex-grow-1">Clear</a>
                 </div>
             </form>
         </div>
     </div>
 
     <div class="card app-card shadow">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 app-table">
-                <thead>
-                    <tr>
-                        <th>Patient</th>
-                        <th>Doctor</th>
-                        <th>Date & Time</th>
-                        <th>Duration</th>
-                        <th>Status</th>
-                        <th class="action-cell">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Any())
-                    {
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 app-table app-table-appointments">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date &amp; time</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th class="action-cell text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @foreach (var appointment in Model)
                         {
+                            var canEdit = canManage && appointment.Status != HospitalInformationSystem.Models.AppointmentStatus.Completed
+                                && appointment.Status != HospitalInformationSystem.Models.AppointmentStatus.Cancelled;
                             <tr>
                                 <td class="fw-semibold">@appointment.Patient.FullName</td>
-                                <td>@appointment.DoctorProfile.User.FullName<br/><small class="text-muted">@appointment.DoctorProfile.Specialty</small></td>
+                                <td>
+                                    @appointment.DoctorProfile.User.FullName<br />
+                                    <small class="text-muted">@appointment.DoctorProfile.Specialty</small>
+                                </td>
                                 <td>@appointment.AppointmentDateTime.ToString("yyyy-MM-dd HH:mm")</td>
-                                <td><span class="badge bg-secondary">@appointment.Duration min</span></td>
+                                <td><span class="badge bg-secondary">@(appointment.Duration ?? 30) min</span></td>
                                 <td>
                                     @switch (appointment.Status)
                                     {
                                         case HospitalInformationSystem.Models.AppointmentStatus.Pending:
-                                            <span class="badge bg-warning">⏳ Pending</span>
+                                            <span class="badge bg-warning text-dark">Pending</span>
                                             break;
                                         case HospitalInformationSystem.Models.AppointmentStatus.Confirmed:
-                                            <span class="badge bg-info">✓ Confirmed</span>
+                                            <span class="badge bg-info text-dark">Confirmed</span>
                                             break;
                                         case HospitalInformationSystem.Models.AppointmentStatus.Cancelled:
-                                            <span class="badge bg-danger">✕ Cancelled</span>
+                                            <span class="badge bg-danger">Cancelled</span>
                                             break;
                                         case HospitalInformationSystem.Models.AppointmentStatus.Completed:
-                                            <span class="badge bg-success">✓ Completed</span>
+                                            <span class="badge bg-success">Completed</span>
                                             break;
                                     }
                                 </td>
-                                <td>
-                                    <div class="app-action-group">
-                                        <a asp-action="Details" asp-route-id="@appointment.Id" class="btn btn-sm btn-info">View</a>
-                                        @if ((User.IsInRole("Reception") || User.IsInRole("Admin")) && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Pending)
+                                <td class="text-end">
+                                    <div class="app-action-group justify-content-end">
+                                        <a asp-action="Details"
+                                           asp-route-id="@appointment.Id"
+                                           class="btn btn-sm btn-outline-info"
+                                           title="View details">
+                                            <i class="bi bi-eye"></i>
+                                            <span class="d-none d-xl-inline ms-1">Details</span>
+                                        </a>
+                                        @if (canEdit)
                                         {
-                                            <a asp-action="Edit" asp-route-id="@appointment.Id" class="btn btn-sm btn-warning">Edit</a>
+                                            <a asp-action="Edit"
+                                               asp-route-id="@appointment.Id"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Edit appointment">
+                                                <i class="bi bi-pencil"></i>
+                                                <span class="d-none d-xl-inline ms-1">Edit</span>
+                                            </a>
                                         }
-                                        @if ((User.IsInRole("Doctor") || User.IsInRole("Reception") || User.IsInRole("Admin")) && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Pending)
+                                        @if (canManage && (appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Pending
+                                            || appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Cancelled))
                                         {
-                                            <form asp-action="Confirm" asp-route-id="@appointment.Id" method="post" style="display:inline;">
-                                                <button type="submit" class="btn btn-sm btn-success">Confirm</button>
-                                            </form>
-                                            <form asp-action="Cancel" asp-route-id="@appointment.Id" method="post" style="display:inline;">
-                                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                            <form asp-action="Delete"
+                                                  asp-route-id="@appointment.Id"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Remove this appointment permanently?');">
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        title="Delete appointment">
+                                                    <i class="bi bi-trash"></i>
+                                                    <span class="d-none d-xl-inline ms-1">Delete</span>
+                                                </button>
                                             </form>
                                         }
-                                        @if ((User.IsInRole("Doctor") || User.IsInRole("Reception") || User.IsInRole("Admin")) && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Confirmed)
+
+                                        @if (canWorkflow && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Pending)
                                         {
-                                            <form asp-action="Complete" asp-route-id="@appointment.Id" method="post" style="display:inline;">
-                                                <button type="submit" class="btn btn-sm btn-primary">Complete</button>
+                                            <form asp-action="Confirm" asp-route-id="@appointment.Id" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-success" title="Confirm">
+                                                    <i class="bi bi-check-lg"></i>
+                                                    <span class="d-none d-xxl-inline ms-1">Confirm</span>
+                                                </button>
+                                            </form>
+                                            <form asp-action="Cancel" asp-route-id="@appointment.Id" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel appointment">
+                                                    <i class="bi bi-x-lg"></i>
+                                                    <span class="d-none d-xxl-inline ms-1">Cancel</span>
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (canWorkflow && appointment.Status == HospitalInformationSystem.Models.AppointmentStatus.Confirmed)
+                                        {
+                                            <form asp-action="Complete" asp-route-id="@appointment.Id" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-primary" title="Mark complete">
+                                                    <i class="bi bi-check2-circle"></i>
+                                                    <span class="d-none d-xxl-inline ms-1">Complete</span>
+                                                </button>
                                             </form>
                                         }
                                     </div>
                                 </td>
                             </tr>
                         }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="card-body py-5">
+                <div class="app-empty-state mb-0">
+                    <div class="display-6 text-muted mb-3">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+                    @if (hasFilters)
+                    {
+                        <h5 class="text-dark">No appointments match your filters</h5>
+                        <p class="mb-4">Try widening the date range or clearing filters.</p>
+                        <a asp-action="Index" class="btn btn-outline-primary me-2">Clear filters</a>
                     }
-                </tbody>
-            </table>
-        </div>
+                    else
+                    {
+                        <h5 class="text-dark">No appointments yet</h5>
+                        <p class="mb-4">Create a booking to get your schedule started.</p>
+                        @if (canManage)
+                        {
+                            <a asp-action="Create" class="btn btn-success btn-lg px-4">
+                                <i class="bi bi-calendar-plus me-2"></i>
+                                Create first appointment
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="small text-muted mb-0">New bookings are added by reception or administration.</p>
+                        }
+                    }
+                </div>
+            </div>
+        }
     </div>
-
-    @if (!Model.Any())
-    {
-        <div class="app-empty-state">
-            <h5>📭 No Appointments Found</h5>
-            <p>No appointments match your criteria. Try adjusting your filters.</p>
-            @if (User.IsInRole("Reception") || User.IsInRole("Admin"))
-            {
-                <a asp-action="Create" class="btn btn-primary">Create First Appointment</a>
-            }
-        </div>
-    }
 
 </div>

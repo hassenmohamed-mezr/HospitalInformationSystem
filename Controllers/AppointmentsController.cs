@@ -294,5 +294,19 @@ namespace HospitalInformationSystem.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            if (!CanManageAppointments()) return RedirectToAction("AccessDenied", "Auth");
+
+            var appointment = _context.Appointments.Find(id);
+            if (appointment == null) return NotFound();
+
+            _context.Appointments.Remove(appointment);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
     }
 }

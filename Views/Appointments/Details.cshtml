@@ -2,12 +2,29 @@
 
 @{
     ViewData["Title"] = "Appointment Details";
+    var role = Context.Session.GetString("Role");
+    var canManage = role == "Admin" || role == "Reception";
+    var canEdit = canManage && Model.Status != HospitalInformationSystem.Models.AppointmentStatus.Completed
+        && Model.Status != HospitalInformationSystem.Models.AppointmentStatus.Cancelled;
 }
 
 <div class="container py-3 app-page">
 
     <div class="app-page-header">
-        <h2 class="app-page-title">📋 Appointment Details</h2>
+        <h2 class="app-page-title">Appointment Details</h2>
+        <div class="app-page-actions">
+            @if (canEdit)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil me-1"></i>
+                    Edit
+                </a>
+            }
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Back to list
+            </a>
+        </div>
     </div>
 
     <div class="row" style="max-width: 800px; margin: 0 auto;">
@@ -83,13 +100,6 @@
 
                 </div>
 
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="col-12">
-            <div class="d-flex gap-2 flex-wrap">
-                <a asp-action="Index" class="btn btn-outline-secondary">← Back to List</a>
             </div>
         </div>
 

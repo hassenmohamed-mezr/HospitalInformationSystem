@@ -22,6 +22,15 @@ namespace HospitalInformationSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Ask([FromBody] ChatRequest request)
         {
+            if (request == null || string.IsNullOrWhiteSpace(request.Question))
+            {
+                return Content(
+                    JsonSerializer.Serialize(new { answer = "Question is required." }),
+                    "application/json",
+                    Encoding.UTF8
+                );
+            }
+
             // Must match FastAPI Pydantic field names (camelCase "question"), not C# PascalCase.
             var jsonOptions = new JsonSerializerOptions
             {
@@ -29,14 +38,36 @@ namespace HospitalInformationSystem.Controllers
             };
             var json = JsonSerializer.Serialize(request, jsonOptions);
 
-            var response = await _http.PostAsync(
-                "http://10.0.4.173:8000/ask",
-                new StringContent(json, Encoding.UTF8, "application/json")
-            );
+            try
+            {
+                var response = await _http.PostAsync(
+                    "http://127.0.0.1:8000/ask",
+                    new StringContent(json, Encoding.UTF8, "application/json")
+                );
 
-            var result = await response.Content.ReadAsStringAsync();
+                var result = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(result))
+                {
+                    result = JsonSerializer.Serialize(new { answer = "Assistant returned an empty response." }, jsonOptions);
+                }
 
-            return Content(result, "application/json");
+                return new ContentResult
+                {
+                    Content = result,
+                    ContentType = "application/json",
+                    StatusCode = (int)response.StatusCode
+                };
+            }
+            catch (Exception)
+            {
+                var errorJson = JsonSerializer.Serialize(new { answer = "Unable to reach assistant service." }, jsonOptions);
+                return new ContentResult
+                {
+                    Content = errorJson,
+                    ContentType = "application/json",
+                    StatusCode = 503
+                };
+            }
         }
     }
 

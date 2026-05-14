@@ -8,7 +8,8 @@ import { wireFloatingChatButton } from "./FloatingChatButton.js";
  */
 export function initFloatingChat(root) {
   const askUrl = root.dataset.chatAskUrl;
-  if (!askUrl) return;
+  const endpoint = /\/Chat\/Ask$/i.test(askUrl || "") ? askUrl : "/Chat/Ask";
+  if (!endpoint) return;
 
   const fab = root.querySelector("#floating-chat-fab");
   const panel = root.querySelector("#floating-chat-panel");
@@ -59,34 +60,56 @@ export function initFloatingChat(root) {
     setLoading(true);
 
     try {
-      const response = await fetch(askUrl, {
+      const payload = { question: text };
+      console.debug("[FloatingChat] POST URL:", endpoint);
+      console.debug("[FloatingChat] Request payload:", payload);
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: text }),
+        body: JSON.stringify(payload),
       });
 
-      let data;
+      const rawBody = await response.text();
+      console.debug("[FloatingChat] HTTP status:", response.status);
+      console.debug("[FloatingChat] Raw response:", rawBody);
+
+      if (!rawBody || !rawBody.trim()) {
+        messageList.appendError("Empty response from assistant.");
+        return;
+      }
+
+      let data = null;
       try {
-        data = await response.json();
+        data = JSON.parse(rawBody);
       } catch {
         messageList.appendError("Invalid response from server.");
         return;
       }
+      console.debug("[FloatingChat] Parsed response payload:", data);
 
       const reply =
-        typeof data.answer === "string"
+        typeof data?.answer === "string"
           ? data.answer
-          : data.detail != null
+          : typeof data?.Answer === "string"
+            ? data.Answer
+            : data?.detail != null
             ? JSON.stringify(data.detail)
-            : "Request failed.";
+            : "";
 
       if (!response.ok) {
-        messageList.appendError(reply);
+        messageList.appendError(reply || `Request failed (${response.status}).`);
+        return;
+      }
+
+      if (!reply.trim()) {
+        messageList.appendError("Assistant returned an empty answer.");
         return;
       }
 
       messageList.appendAssistant(reply);
-    } catch {
+    } catch (err) {
+      console.error("[FloatingChat] Request failed:", err);
       messageList.appendError("Network error. Check your connection and try again.");
     } finally {
       setLoading(false);
